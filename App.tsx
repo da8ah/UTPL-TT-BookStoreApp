@@ -1,20 +1,24 @@
+import * as eva from "@eva-design/eva";
+import { ApplicationProvider, IconRegistry } from '@ui-kitten/components';
+import { EvaIconsPack } from "@ui-kitten/eva-icons";
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView, View } from 'react-native';
+import MainFrame from "./src/view/MainFrame";
+import { globalStyles as styles } from "./src/view/styles/styles";
+import customTheme from "./src/view/styles/theme.json";
 
 export default function App() {
+  const themeMode = 'dark'
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+    <>
+      <IconRegistry icons={EvaIconsPack} />
+      <ApplicationProvider {...eva} theme={{ ...eva[themeMode], ...customTheme.basic, ...customTheme[themeMode] }}>
+        <View style={{ height: 25, backgroundColor: '#272729' }} />
+        <SafeAreaView style={[styles.common, { flex: 1 }]}>
+          <MainFrame />
+          <StatusBar style="auto" />
+        </SafeAreaView>
+      </ApplicationProvider>
+    </>
+  )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
