@@ -1,5 +1,5 @@
 import { Button, Icon, Text, useTheme } from "@ui-kitten/components";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { KeyboardAvoidingView, TouchableWithoutFeedback, View } from "react-native";
 import useAuth from "../../hooks/useAuth";
 import useThemeMode from "../../hooks/useThemeMode";
@@ -8,11 +8,9 @@ import LoadingAlert from "../components/LoadingAlert";
 import { globalStyles as styles } from "../styles/styles";
 
 export default function SignIn() {
-    const { tryToAuth } = useAuth()
+    const { isLoading, tryToAuth } = useAuth()
     const { themeMode } = useThemeMode()
     const theme = useTheme();
-    const [isLoading, setLoading] = useState(false)
-    useEffect(() => { }, [isLoading])
 
     const [user, setUser] = useState<string>('tiber');
     const [password, setPassword] = useState<string>('tiber');
@@ -64,13 +62,10 @@ export default function SignIn() {
                         <View style={[styles.common, { justifyContent: 'flex-start', width: '100%', marginVertical: 30 }]}>
                             <Button
                                 testID="button-auth"
+                                activeOpacity={0.7}
                                 accessoryRight={() => <Icon name="log-in" fill="white" height="20" width="20" />}
                                 style={[{ width: '70%', backgroundColor: theme['color-info-500'], borderWidth: 0 }]}
-                                onPress={() => {
-                                    setLoading(true)
-                                    tryToAuth({ user, password })
-                                    setLoading(false)
-                                }}
+                                onPressIn={() => tryToAuth({ user, password })}
                             >
                                 INICIAR SESIÓN
                             </Button>

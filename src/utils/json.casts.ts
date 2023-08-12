@@ -145,7 +145,7 @@ export class BookConverter {
 	// rome-ignore lint/suspicious/noExplicitAny: <explanation>
 	public static jsonToBook(req: any): StockBook {
 		// All Attrs from body
-		const { isbn, imgRef, title, author, releaseDate, createdDate, description, grossPricePerUnit, inOffer, discountPercentage, hasIva, stock, visible, recommended, bestSeller, recent } = req.body;
+		const { isbn, imgRef, title, author, releaseDate, createdDate, description, grossPricePerUnit, inOffer, discountPercentage, hasIva, stock, visible, recommended, bestSeller, recent } = req;
 		// NewStockBook with all Attrs
 		return new StockBook(isbn, imgRef, title, author, releaseDate, createdDate, description, grossPricePerUnit, inOffer, discountPercentage, hasIva, stock, visible, recommended, bestSeller, recent);
 	}
@@ -154,7 +154,7 @@ export class BookConverter {
 	public static jsonToBuyBooks(req: any): ToBuyBook[] {
 		const books: ToBuyBook[] = [];
 
-		req.body.map(
+		req.map(
 			// rome-ignore lint/suspicious/noExplicitAny: <explanation>
 			(book: any) =>
 				books.push(new ToBuyBook(book.isbn, book.imgRef, book.title, book.author, book.releaseDate, book.grossPricePerUnit, book.inOffer, book.discountPercentage, book.hasIva, book.cant)),

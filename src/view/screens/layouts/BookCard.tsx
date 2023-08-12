@@ -30,7 +30,7 @@ const CardMiddle = (props: { isRecommended: boolean; isBestSeller: boolean; isRe
                 <Icon name="clock" fill={!props.isRecent ? "darkgray" : "tomato"} height="30" width="30" />
             </View>
             <View style={styles.imageLayout}>
-                {/* <Image style={styles.image} source={require("@Assets/bookstore.png")} /> */}
+                <Image style={styles.image} source={require("@Assets/bookstore.png")} />
             </View>
         </View>
     );

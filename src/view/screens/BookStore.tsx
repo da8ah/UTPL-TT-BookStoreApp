@@ -1,7 +1,7 @@
 import { List, ListProps } from "@ui-kitten/components";
 import { useEffect, useMemo, useState } from "react";
 import { Keyboard, View } from "react-native";
-import useAppViewModel, { BooksObserver } from "../../hooks/useAppViewModel";
+import useBooks from "../../hooks/useBooks";
 import StockBook from "../../model/core/entities/StockBook";
 import SearchBar, { EmptyIcon } from "../components/SearchBar";
 import { globalStyles as styles } from "../styles/styles";
@@ -31,28 +31,16 @@ const BookStoreList = (props: { books: StockBook[] } & Omit<ListProps, 'data' | 
 };
 
 export default function BookStore() {
-    const { vimo } = useAppViewModel()
+    const { isLoading, books, queryBooks } = useBooks()
     const [query, setQuey] = useState('')
-    const [refreshing, setRefreshing] = useState<boolean>(false);
 
-    const forceUpdateAfterBookModification: BooksObserver = () => queryData()
-    useEffect(() => {
-        vimo.attach(forceUpdateAfterBookModification);
-        return () => vimo.detach();
-    }, [])
-
+    useEffect(() => { queryBooks() }, [])
     useEffect(() => { }, [query])
-    const books = useMemo(() => {
-        return vimo.getBooks().filter((book) => {
+    const data = useMemo(() => {
+        return books.filter((book) => {
             return book.getAuthor().toLowerCase().includes(query.toLowerCase())
         })
-    }, [vimo.getBooks(), query])
-
-    const queryData = async () => {
-        setRefreshing(true);
-        await vimo.queryBooksFromService()
-        setRefreshing(false);
-    };
+    }, [books, query])
 
     const CloseIcon = (<EmptyIcon onPress={() => setQuey('')} />)
     return <View style={[styles.common, styles.body]}>
@@ -64,9 +52,9 @@ export default function BookStore() {
         />
         <BookStoreList
             testID='books'
-            books={books}
-            refreshing={refreshing}
-            onRefresh={queryData}
+            books={data}
+            refreshing={isLoading}
+            onRefresh={queryBooks}
             onScroll={() => Keyboard.dismiss()}
         />
     </View>

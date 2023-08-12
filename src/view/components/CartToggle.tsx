@@ -1,12 +1,10 @@
 import { useNavigation } from "@react-navigation/native";
 import { Button, Icon, Text, useTheme } from "@ui-kitten/components";
-import useAppViewModel from "../../hooks/useAppViewModel";
 import useCart from "../../hooks/useCart";
 import { RootNavProps } from "../routes/types.nav";
 import RoundButton from "./RoundButton";
 
 export default function CartToggle() {
-    const { vimo } = useAppViewModel()
     const { isCartOpen, toggleCart } = useCart()
     const navigation = useNavigation<RootNavProps>()
     const theme = useTheme()
@@ -28,8 +26,9 @@ export default function CartToggle() {
 }
 
 const CartButton = () => {
-    const navigation = useNavigation<RootNavProps>()
     const { isCartOpen, toggleCart } = useCart()
+    const navigation = useNavigation<RootNavProps>()
+
     return <Button
         status="basic"
         appearance="ghost"
@@ -44,7 +43,8 @@ const CartButton = () => {
             <Icon name="shopping-cart" fill="white" height="30" width="30" />
             <Text
                 style={{
-                    backgroundColor: 'black',
+                    backgroundColor: 'tomato',
+                    color: '#303136',
                     position: 'absolute',
                     top: 0,
                     right: 0,
@@ -53,7 +53,8 @@ const CartButton = () => {
                     width: 20,
                     borderRadius: 100,
                     textAlign: 'center',
-                    verticalAlign: 'middle'
+                    verticalAlign: 'middle',
+                    fontWeight: 'bold'
                 }}>1</Text>
         </>
     </Button>

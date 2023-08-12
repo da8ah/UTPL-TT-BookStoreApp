@@ -96,8 +96,6 @@ export default class RemoteService implements IPersistenciaClient, IPersistencia
 
     async obtenerLibrosVisibles(): Promise<StockBook[]> {
         try {
-            if (this.token === '') throw Error('Token was not provided, must signin!')
-
             let data: StockBook[] = await fetch(this.apiBooks)
                 .then((res) => res.json())
                 .then((body) => body.map((item: StockBook) => BookConverter.jsonToBook(item)));
