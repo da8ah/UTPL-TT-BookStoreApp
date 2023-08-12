@@ -14,7 +14,7 @@ export type TabBarUserProps = BottomTabScreenProps<BottomTabParamList, 'UserNav'
 
 export type RootStackParamList = {
 	BottomNav: NavigatorScreenParams<BottomTabParamList>;
-	CartDraft: undefined;
+	CartOrder: undefined;
 };
 export type UserStackParamList = {
 	User: undefined;
@@ -23,4 +23,4 @@ export type UserStackParamList = {
 };
 
 export type RootNavProps = NativeStackNavigationProp<RootStackParamList, 'BottomNav'>
-export type CartRouteProps = RouteProp<RootStackParamList, "CartDraft">
+export type CartRouteProps = RouteProp<RootStackParamList, "CartOrder">
