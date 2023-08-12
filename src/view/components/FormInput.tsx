@@ -1,7 +1,6 @@
 import { Input, InputProps, Text, useTheme } from "@ui-kitten/components";
-import { useContext } from "react";
 import { ColorValue, StyleSheet, View } from "react-native";
-import { ThemeContext } from "../../hooks/context/ThemeContext";
+import useThemeMode from "../../hooks/useThemeMode";
 
 type BorderTop = {
     isTop?: boolean;
@@ -20,7 +19,7 @@ type FormInputProps = (BorderTop | BorderBottom) & {
 }
 
 export default function FormInput(props: InputProps & FormInputProps) {
-    const { themeMode } = useContext(ThemeContext)
+    const { themeMode } = useThemeMode()
     const theme = useTheme()
     return <View style={styles.inputLayout}>
         <View style={[styles.inputTitle, props.isTop && styles.top, props.isBottom && styles.bottom, props.formColor !== undefined && { backgroundColor: props.formColor }]}>

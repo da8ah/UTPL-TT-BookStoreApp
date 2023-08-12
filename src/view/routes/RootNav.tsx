@@ -1,9 +1,9 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { View } from "react-native";
+import CartOrder from "../screens/CartOrder";
 import { globalStyles as styles } from "../styles/styles";
 import BottomNav from "./BottomNav";
 import { RootStackParamList } from "./types.nav";
-import CartOrder from "../screens/CartOrder";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 

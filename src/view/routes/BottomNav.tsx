@@ -1,15 +1,14 @@
 import { BottomTabBarProps, createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { BottomNavigation, BottomNavigationTab, Icon, Text, useTheme } from "@ui-kitten/components";
-import { useContext } from 'react';
 import { Keyboard } from "react-native";
-import { ThemeContext } from "../../hooks/context/ThemeContext";
+import useThemeMode from "../../hooks/useThemeMode";
 import BookStore from "../screens/BookStore";
 import Home from "../screens/Home";
 import UserNav from "./UserNav";
 import { BottomTabParamList } from "./types.nav";
 
 const UiKittenBottomTabNav = ({ navigation, state }: BottomTabBarProps) => {
-    const { themeMode } = useContext(ThemeContext)
+    const { themeMode } = useThemeMode()
     const theme = useTheme()
     const indicatorColor = theme['background-alternative-color-1']
 

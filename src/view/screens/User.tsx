@@ -1,8 +1,6 @@
 import { Icon, Text, useTheme } from "@ui-kitten/components";
-import { useContext } from "react";
 import { KeyboardAvoidingView, View } from "react-native";
-import { AuthContext } from "../../hooks/context/AuthContext";
-import useAppViewModel from "../../hooks/context/useAppViewModel";
+import useAuth from "../../hooks/useAuth";
 import useKeyboard from "../../hooks/useKeyboard";
 import ActionButton from "../components/ActionButton";
 import FormInput from "../components/FormInput";
@@ -10,9 +8,9 @@ import RoundButton from "../components/RoundButton";
 import { globalStyles as styles } from "../styles/styles";
 
 export default function User() {
-    const user = useAppViewModel().vimo.getUser()
+    const { client } = useAuth()
     const [isKeyboardVisible] = useKeyboard()
-    const { logout } = useContext(AuthContext)
+    const { logout } = useAuth()
     const theme = useTheme()
 
     const topButtons = [
@@ -68,13 +66,13 @@ export default function User() {
             <Text
                 style={{ fontSize: 30, fontFamily: "serif", fontStyle: "italic", textAlign: "center", textTransform: "uppercase" }}
             >
-                {user.getUser()}
+                {client.getUser()}
             </Text>
         </View>
         <KeyboardAvoidingView style={{ flex: 2, width: '80%' }}>
-            <FormInput isTop disabled showSoftInputOnFocus={false} formColor={theme['background-basic-color-2']} title="Nombre" placeholder="Nombre" textStyle={{ textTransform: "capitalize" }} value={user.getName()} />
-            <FormInput disabled showSoftInputOnFocus={false} formColor={theme['background-basic-color-2']} inputMode="email" title="Email" placeholder="Email" value={user.getEmail()} />
-            <FormInput isBottom disabled showSoftInputOnFocus={false} formColor={theme['background-basic-color-2']} title="Móvil" placeholder="Móvil" value={user.getMobile()} />
+            <FormInput isTop disabled showSoftInputOnFocus={false} formColor={theme['background-basic-color-2']} title="Nombre" placeholder="Nombre" textStyle={{ textTransform: "capitalize" }} value={client.getName()} />
+            <FormInput disabled showSoftInputOnFocus={false} formColor={theme['background-basic-color-2']} inputMode="email" title="Email" placeholder="Email" value={client.getEmail()} />
+            <FormInput isBottom disabled showSoftInputOnFocus={false} formColor={theme['background-basic-color-2']} title="Móvil" placeholder="Móvil" value={client.getMobile()} />
         </KeyboardAvoidingView>
         <View style={{ display: isKeyboardVisible ? 'none' : 'flex', flex: 1, width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
             {bottomButtons.map((button, index) => {
@@ -85,5 +83,5 @@ export default function User() {
                 />
             })}
         </View>
-    </View >
+    </View>
 }

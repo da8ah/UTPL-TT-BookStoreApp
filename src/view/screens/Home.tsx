@@ -1,7 +1,7 @@
 import { List, ListProps } from "@ui-kitten/components";
 import { useEffect, useMemo, useState } from "react";
 import { Keyboard, View } from "react-native";
-import useAppViewModel, { BooksObserver } from "../../hooks/context/useAppViewModel";
+import useAppViewModel, { BooksObserver } from "../../hooks/useAppViewModel";
 import StockBook from "../../model/core/entities/StockBook";
 import SearchBar, { EmptyIcon } from "../components/SearchBar";
 import { globalStyles as styles } from "../styles/styles";

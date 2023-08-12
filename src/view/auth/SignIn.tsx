@@ -1,15 +1,15 @@
 import { Button, Icon, Text, useTheme } from "@ui-kitten/components";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { KeyboardAvoidingView, TouchableWithoutFeedback, View } from "react-native";
-import { AuthContext } from "../../hooks/context/AuthContext";
-import { ThemeContext } from "../../hooks/context/ThemeContext";
+import useAuth from "../../hooks/useAuth";
+import useThemeMode from "../../hooks/useThemeMode";
 import FormInput from "../components/FormInput";
 import LoadingAlert from "../components/LoadingAlert";
 import { globalStyles as styles } from "../styles/styles";
 
 export default function SignIn() {
-    const { tryToAuth } = useContext(AuthContext)
-    const { themeMode } = useContext(ThemeContext)
+    const { tryToAuth } = useAuth()
+    const { themeMode } = useThemeMode()
     const theme = useTheme();
     const [isLoading, setLoading] = useState(false)
     useEffect(() => { }, [isLoading])
@@ -33,7 +33,7 @@ export default function SignIn() {
                 <>
                     <View style={[styles.common, { flex: 1, paddingVertical: 50 }]}>
                         <Icon name="people" fill={theme['background-alternative-color-4']} height="100" width="100" />
-                        <Text style={{ fontSize: 30, fontFamily: "serif", fontStyle: "italic" }}>Admin</Text>
+                        <Text style={{ fontSize: 30, fontFamily: "serif", fontStyle: "italic" }}>Clientes</Text>
                     </View>
                     <KeyboardAvoidingView style={{ flex: 2, width: "100%", alignItems: "center" }} behavior="padding">
                         <View style={{ width: '80%' }}>
@@ -66,9 +66,9 @@ export default function SignIn() {
                                 testID="button-auth"
                                 accessoryRight={() => <Icon name="log-in" fill="white" height="20" width="20" />}
                                 style={[{ width: '70%', backgroundColor: theme['color-info-500'], borderWidth: 0 }]}
-                                onPress={async () => {
+                                onPress={() => {
                                     setLoading(true)
-                                    await tryToAuth({ user, password })
+                                    tryToAuth({ user, password })
                                     setLoading(false)
                                 }}
                             >

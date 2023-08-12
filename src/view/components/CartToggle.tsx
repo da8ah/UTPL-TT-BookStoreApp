@@ -1,42 +1,42 @@
 import { useNavigation } from "@react-navigation/native";
 import { Button, Icon, Text, useTheme } from "@ui-kitten/components";
-import useAppViewModel from "../../hooks/context/useAppViewModel";
+import useAppViewModel from "../../hooks/useAppViewModel";
+import useCart from "../../hooks/useCart";
 import { RootNavProps } from "../routes/types.nav";
 import RoundButton from "./RoundButton";
-import { View } from "react-native";
-import ActionButton from "./ActionButton";
 
 export default function CartToggle() {
     const { vimo } = useAppViewModel()
-    // const { isEditorOpen } = useContext(EditorContext)
-    const isEditorOpen = false
+    const { isCartOpen, toggleCart } = useCart()
     const navigation = useNavigation<RootNavProps>()
     const theme = useTheme()
 
     return <>
-        {isEditorOpen ?
+        {isCartOpen ?
             <RoundButton
                 size="tiny"
                 icon={() => <Icon name="close" fill="black" height="30" width="30" />}
                 backgroundColor={theme['color-warning-500']}
                 onPress={() => {
+                    toggleCart()
                     if (navigation.canGoBack()) navigation.goBack()
                     else navigation.navigate('BottomNav', { screen: 'Home' })
                 }}
             /> :
-            <CartButton isEditorOpen={isEditorOpen} />}
+            <CartButton />}
     </>
 }
 
-const CartButton = (props: { isEditorOpen: boolean }) => {
+const CartButton = () => {
     const navigation = useNavigation<RootNavProps>()
-    const { isEditorOpen } = props
+    const { isCartOpen, toggleCart } = useCart()
     return <Button
         status="basic"
         appearance="ghost"
         style={{ position: 'relative', borderWidth: 0, alignItems: 'center', justifyContent: 'center' }}
         onPress={() => {
             // if (!isEditorOpen) vimo.createDraft()
+            toggleCart()
             navigation.navigate('CartOrder')
         }}
     >

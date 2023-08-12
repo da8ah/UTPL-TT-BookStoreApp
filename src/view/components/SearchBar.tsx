@@ -1,11 +1,10 @@
 import { Icon, Input, InputProps, useTheme } from "@ui-kitten/components";
-import { useContext } from "react";
 import { TouchableOpacity, View } from "react-native";
-import { ThemeContext } from "../../hooks/context/ThemeContext";
+import useThemeMode from "../../hooks/useThemeMode";
 import { globalStyles as styles } from "../styles/styles";
 
 export const EmptyIcon = (props: { onPress: () => any }) => {
-    const { themeMode } = useContext(ThemeContext)
+    const { themeMode } = useThemeMode()
     const theme = useTheme()
     return <TouchableOpacity onPress={props.onPress}>
         <Icon name={themeMode === 'dark' ? 'close-square' : 'close-square-outline'} fill={theme['background-alternative-color-4']} height="25" width="25" />
@@ -13,7 +12,7 @@ export const EmptyIcon = (props: { onPress: () => any }) => {
 };
 
 export default function SearchBar(props: { placeholder: string } & InputProps) {
-    const { themeMode } = useContext(ThemeContext)
+    const { themeMode } = useThemeMode()
     const theme = useTheme()
     const SearchIcon = () => <Icon name="search-outline" fill={themeMode === 'dark' ? 'white' : 'black'} height="30" width="30" />;
     return (

@@ -2,7 +2,7 @@ import { useNavigation } from "@react-navigation/native";
 import { Button, Icon, Text, useTheme } from "@ui-kitten/components";
 import { memo } from "react";
 import { Image, ListRenderItemInfo, ScrollView, StyleSheet, View } from "react-native";
-import useAppViewModel from "../../../hooks/context/useAppViewModel";
+import useAppViewModel from "../../../hooks/useAppViewModel";
 import StockBook from "../../../model/core/entities/StockBook";
 import { RootNavProps } from "../../routes/types.nav";
 

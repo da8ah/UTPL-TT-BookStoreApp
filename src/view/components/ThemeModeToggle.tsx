@@ -1,9 +1,8 @@
 import { Button, Icon } from "@ui-kitten/components";
-import { useContext } from "react";
-import { ThemeContext } from "../../hooks/context/ThemeContext";
+import useThemeMode from "../../hooks/useThemeMode";
 
 export default function ThemeModeToggle() {
-    const { themeMode, toggleThemeMode } = useContext(ThemeContext);
+    const { themeMode, toggleThemeMode } = useThemeMode();
     const SunIcon = () => <Icon name="sun" fill="white" height="30" width="30" />;
     const MoonIcon = () => <Icon name="moon" fill="white" height="30" width="30" />;
     return <Button

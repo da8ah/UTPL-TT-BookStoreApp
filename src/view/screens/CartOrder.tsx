@@ -2,17 +2,16 @@ import { useNavigation } from "@react-navigation/native";
 import { Button, Icon, List, Text, useTheme } from "@ui-kitten/components";
 import { useContext, useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { ThemeContext } from "../../hooks/context/ThemeContext";
-import useAppViewModel from "../../hooks/context/useAppViewModel";
+import useAppViewModel from "../../hooks/useAppViewModel";
 import Cart from "../../model/core/entities/Cart";
 import ToBuyBook from "../../model/core/entities/ToBuyBook";
-import RoundButton from "../components/RoundButton";
 import { RootNavProps } from "../routes/types.nav";
 import CartItem from "./layouts/CartItem";
+import useThemeMode from "../../hooks/useThemeMode";
 
 export default function CartOrder() {
     const navigation = useNavigation<RootNavProps>()
-    const { themeMode } = useContext(ThemeContext)
+    const { themeMode } = useThemeMode()
     const theme = useTheme()
 
     const { vimo } = useAppViewModel()

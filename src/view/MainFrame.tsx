@@ -2,6 +2,7 @@ import { useNetInfo } from "@react-native-community/netinfo";
 import { NavigationContainer } from "@react-navigation/native";
 import { Layout, Text } from "@ui-kitten/components";
 import { View, ViewProps } from "react-native";
+import useThemeMode from "../hooks/useThemeMode";
 import CartToggle from "./components/CartToggle";
 import ThemeModeToggle from "./components/ThemeModeToggle";
 import RootNav from "./routes/RootNav";
@@ -11,19 +12,17 @@ import { darkNavTheme, lightNavTheme, globalStyles as styles } from "./styles/st
 
 export default function MainFrame() {
     const { isConnected } = useNetInfo()
-    const themeMode = 'dark'
-    // const { isAuth } = useContext(AuthContext)
-    const isAuth = true
+    const { themeMode } = useThemeMode()
 
     return <Layout style={[styles.common, { flex: 1 }]}>
         <NavigationContainer theme={themeMode === 'dark' ? darkNavTheme : lightNavTheme}>
-            <Header isAuth={isAuth && isConnected || false} style={[styles.common, styles.header, { backgroundColor: '#272729' }]} />
+            <Header isConnected={isConnected || false} style={[styles.common, styles.header, { backgroundColor: '#272729' }]} />
             {!isConnected ? <NetworkError /> : <RootNav />}
         </NavigationContainer>
     </Layout>
 }
 
-const Header = (props: ViewProps & { isAuth: boolean }) => {
+const Header = (props: ViewProps & { isConnected: boolean }) => {
     return (
         <View {...props}>
             <View style={[styles.common, { width: '20%' }]}>
@@ -38,7 +37,7 @@ const Header = (props: ViewProps & { isAuth: boolean }) => {
                 </Text>
             </View>
             <View style={[styles.common, { width: '20%' }]}>
-                {props.isAuth && <CartToggle />}
+                {props.isConnected && <CartToggle />}
             </View>
         </View>
     )
