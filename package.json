@@ -1,6 +1,6 @@
 {
   "name": "utpl-tt-bookstoreapp",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "npx expo start --tunnel"

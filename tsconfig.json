@@ -3,6 +3,15 @@
   "compilerOptions": {
     "jsx": "react-native",
     "strict": true,
-    "module": "commonjs"
-  }
+    "skipLibCheck": true,
+    "module": "commonjs",
+    "paths": {
+      "@Assets/*": [
+        "./assets/*"
+      ]
+    }
+  },
+  "exclude": [
+    "node_modules"
+  ]
 }
