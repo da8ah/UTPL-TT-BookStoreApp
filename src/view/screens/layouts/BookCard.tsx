@@ -1,44 +1,35 @@
 import { useNavigation } from "@react-navigation/native";
 import { Button, Icon, Text, useTheme } from "@ui-kitten/components";
 import { memo } from "react";
-import { Image, ListRenderItemInfo, ScrollView, StyleSheet, View } from "react-native";
-import useAppViewModel from "../../../hooks/useAppViewModel";
+import { Image, ListRenderItemInfo, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import StockBook from "../../../model/core/entities/StockBook";
 import { RootNavProps } from "../../routes/types.nav";
 
-const CardTop = (props: { isVisible: boolean; isInOffer: boolean; discountPercentage: number }) => {
-    return (
+const CardTop = (props: { price: number; isInOffer: boolean; discountPercentage: number }) => (
+    <View style={[styles.common, styles.cardTop]}>
         <View style={[styles.common, styles.cardHeader]}>
-            {/* <View style={{ marginLeft: 1 }}> */}
-            {props.isVisible ? (
-                <Icon name="eye" fill="dodgerblue" height="30" width="30" />
-            ) : (
-                <Icon name="eye-off" fill="darkgray" height="25" width="25" />
-            )}
-            {/* </View> */}
+            <Text status="success">
+                💲{props.price % 1 !== 0 ? props.price.toFixed(2) : props.price}
+            </Text>
             <Text style={{ color: "red", fontStyle: "italic" }}>{props.isInOffer ? `-${props.discountPercentage}%` : ""}</Text>
         </View>
-    );
-};
+        <Image style={styles.image} source={require("@Assets/bookstore.png")} />
+    </View>
+);
 
-const CardMiddle = (props: { isRecommended: boolean; isBestSeller: boolean; isRecent: boolean }) => {
-    return (
-        <View style={styles.cardStatus}>
-            <View style={styles.icons}>
-                <Icon name="checkmark-circle-2" fill={!props.isRecommended ? "darkgray" : "greenyellow"} height="30" width="30" />
-                <Icon name="star" fill={!props.isBestSeller ? "darkgray" : "gold"} height="30" width="30" />
-                <Icon name="clock" fill={!props.isRecent ? "darkgray" : "tomato"} height="30" width="30" />
-            </View>
-            <View style={styles.imageLayout}>
-                <Image style={styles.image} source={require("@Assets/bookstore.png")} />
-            </View>
-        </View>
-    );
-};
-
-const CardBottom = (props: { title: string; isbn: string; author: string; price: number; stock: number }) => {
+const CardBottom = (props: { title: string; author: string; }) => {
     return (
         <View style={styles.cardBody}>
+            <ScrollView
+                horizontal
+                alwaysBounceHorizontal
+                style={{ height: 30 }}
+                showsHorizontalScrollIndicator={false}
+                showsVerticalScrollIndicator={false}
+                fadingEdgeLength={50}
+            >
+                <Text style={{ fontStyle: "italic" }}>{props.title}</Text>
+            </ScrollView>
             <ScrollView
                 horizontal
                 alwaysBounceHorizontal
@@ -47,55 +38,45 @@ const CardBottom = (props: { title: string; isbn: string; author: string; price:
                 showsVerticalScrollIndicator={false}
                 fadingEdgeLength={50}
             >
-                <Text style={{ fontStyle: "italic" }}>{props.title}</Text>
+                <Text style={{ fontSize: 11 }}>
+                    {props.author}
+                </Text>
             </ScrollView>
-            <View style={[styles.common, styles.bodyProperties]}>
-                <Text style={{ fontSize: 10 }} adjustsFontSizeToFit={true}>
-                    {props.isbn}
-                </Text>
-                <Text style={{ fontSize: 12.5 }} adjustsFontSizeToFit={true}>
-                    {props.price % 1 !== 0 ? props.price.toFixed(2) : props.price} 💲
-                </Text>
-            </View>
-            <View style={[styles.common, styles.bodyProperties]}>
-                <ScrollView
-                    horizontal
-                    alwaysBounceHorizontal
-                    style={{ height: 20 }}
-                    showsHorizontalScrollIndicator={false}
-                    showsVerticalScrollIndicator={false}
-                    fadingEdgeLength={50}
-                >
-                    <Text style={{ fontSize: 11 }} adjustsFontSizeToFit={true}>
-                        {props.author}
-                    </Text>
-                </ScrollView>
-                <View style={{ backgroundColor: `${transparent}` }}>
-                    <Text adjustsFontSizeToFit={true}> {props.stock} 📦</Text>
-                </View>
-            </View>
         </View>
     );
 };
 
-const ButtonIcon = () => <Icon name="settings" fill="white" height="15" width="15" />;
+const ButtonIcon = () => <Icon name="plus-circle" fill="white" height="15" width="15" />;
 const CardButton = (props: { bookISBN: string }) => {
-    const { vimo } = useAppViewModel()
+    // const { vimo } = useAppViewModel()
+    const theme = useTheme()
     const navigation = useNavigation<RootNavProps>();
+
     return (
         <View style={[styles.common, styles.buttonLayout]}>
             <Button
-                style={styles.button}
-                size="small"
+                style={[styles.common, { width: '60%' }]}
+                accessoryRight={ButtonIcon}
                 status="info"
-                accessoryLeft={ButtonIcon}
+                size="tiny"
                 onPress={() => {
-                    vimo.createDraftByISBN(props.bookISBN)
+                    // vimo.createDraftByISBN(props.bookISBN)
                     // navigation.navigate("BookEditor", { bookISBN: props.bookISBN })
                 }}
             >
-                EDITAR
+                AGREGAR
             </Button>
+            <View style={[styles.common, { width: '20%' }]}>
+                <TouchableOpacity
+                    style={{ backgroundColor: theme['color-info-500'], height: 25, width: 25, borderRadius: 100, justifyContent: "center", alignItems: "center" }}
+                    onPressIn={() => {
+                        // setModalChildren(<ModalCant stock={props.book.getStock()} cantUpdater={setCant} setModalVisibility={setModalVisibility} />);
+                        // setModalVisibility(true);
+                    }}
+                >
+                    <Text style={{ color: "white", fontSize: 10, fontWeight: "bold" }}>{1}</Text>
+                </TouchableOpacity>
+            </View>
         </View>
     );
 };
@@ -111,18 +92,15 @@ const CardElement = memo((props: { info: any }) => {
         <View style={styles.mainLayout}>
             {/* Card */}
             <View style={[styles.cardLayout, { backgroundColor: theme['background-basic-color-2'] }]}>
+
                 <CardTop
-                    isVisible={book.isVisible()}
+                    price={book.getGrossPricePerUnit()}
                     isInOffer={book.isInOffer()}
                     discountPercentage={book.getDiscountPercentage()}
                 />
-                <CardMiddle isRecommended={book.isRecommended()} isBestSeller={book.isBestSeller()} isRecent={book.isRecent()} />
                 <CardBottom
                     title={book.getTitle()}
-                    isbn={book.getIsbn()}
                     author={book.getAuthor()}
-                    price={book.getGrossPricePerUnit()}
-                    stock={book.getStock()}
                 />
             </View>
             {/* Button */}
@@ -156,6 +134,18 @@ const styles = StyleSheet.create({
         paddingVertical: 5,
         borderRadius: 7,
     },
+    cardTop: {
+        backgroundColor: "white",
+        height: 200,
+        alignItems: "center",
+        borderTopLeftRadius: 5,
+        borderTopRightRadius: 5,
+    },
+    image: {
+        maxWidth: "80%",
+        height: 170,
+        resizeMode: "contain",
+    },
     cardHeader: {
         backgroundColor: transparent,
         width: "100%",
@@ -164,23 +154,11 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
     },
-    cardStatus: {
-        backgroundColor: "white",
-        width: "100%",
-        height: 140,
-        flexDirection: "row",
-    },
     icons: { width: "20%", justifyContent: "space-evenly" },
-    imageLayout: { width: "80%", alignContent: "center" },
-    image: {
-        maxWidth: "80%",
-        height: 140,
-        resizeMode: "contain",
-    },
     cardBody: {
         backgroundColor: transparent,
         width: "100%",
-        height: 60,
+        height: 30,
         paddingHorizontal: 2,
     },
     bodyProperties: {
@@ -192,6 +170,7 @@ const styles = StyleSheet.create({
     buttonLayout: {
         backgroundColor: transparent,
         height: 50,
+        flexDirection: "row",
     },
     button: { width: "90%" },
 });
