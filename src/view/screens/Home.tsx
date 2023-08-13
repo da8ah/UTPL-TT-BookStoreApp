@@ -1,67 +1,48 @@
-import { List, ListProps } from "@ui-kitten/components";
-import { useEffect, useMemo, useState } from "react";
-import { Keyboard, View } from "react-native";
-import useAppViewModel, { BooksObserver } from "../../hooks/useAppViewModel";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, ScrollView, View } from "react-native";
+import { BooksObserver } from "../../hooks/useAppViewModel";
+import useBooks from "../../hooks/useBooks";
 import StockBook from "../../model/core/entities/StockBook";
-import SearchBar, { EmptyIcon } from "../components/SearchBar";
 import { globalStyles as styles } from "../styles/styles";
-import BookCard from "./layouts/BookCard";
-
-const BookStore = (props: { books: StockBook[] } & Omit<ListProps, 'data' | 'renderItem'>) => {
-    const books = props.books
-    useEffect(() => { }, [books]);
-
-    return (
-        <View style={{ flex: 1 }}>
-            <List
-                {...props}
-                scrollEnabled
-                key={"books"}
-                style={{ backgroundColor: "transparent" }}
-                contentContainerStyle={{ backgroundColor: "transparent" }}
-                columnWrapperStyle={[styles.common, { justifyContent: books.length <= 1 ? 'flex-end' : 'flex-start', flexDirection: books.length <= 1 ? 'row-reverse' : 'row' }]}
-                numColumns={2}
-                initialNumToRender={books.length}
-                data={books}
-                extraData={books}
-                renderItem={BookCard}
-            />
-        </View>
-    );
-};
+import Bookshelf from "./layouts/Bookshelf";
 
 export default function Home() {
-    const { vimo } = useAppViewModel()
-    const [query, setQuey] = useState('')
-    const [refreshing, setRefreshing] = useState<boolean>(false);
+    const { isLoading, books, queryBooks } = useBooks()
+    const [bestSeller, setBestSeller] = useState<StockBook[]>();
+    const [recommended, setRecommended] = useState<StockBook[]>();
+    const [recent, setRecent] = useState<StockBook[]>();
+    const [inOffer, setInOffer] = useState<StockBook[]>();
+    const [refreshing, setRefreshing] = useState(false);
 
-    const forceUpdateAfterBookModification: BooksObserver = () => queryData()
-    useEffect(() => {
-        vimo.attach(forceUpdateAfterBookModification);
-        return () => vimo.detach();
-    }, [])
+    useEffect(() => { displayDataRetrieved() }, [])
+    useEffect(() => { }, [inOffer, bestSeller, recommended, recent])
 
-    useEffect(() => { }, [query])
-    const books = useMemo(() => {
-        return vimo.getBooks().filter((book) => {
-            return book.getAuthor().toLowerCase().includes(query.toLowerCase())
-        })
-    }, [vimo.getBooks(), query])
+    const displayDataRetrieved: BooksObserver = () => {
+        queryBooks()
+        const inOffer = books.filter((book) => {
+            if (book.isInOffer()) return book;
+        });
+        const bestSeller = books.filter((book) => {
+            if (book.isBestSeller()) return book;
+        });
+        const recommended = books.filter((book) => {
+            if (book.isRecommended()) return book;
+        });
+        const recent = books.filter((book) => {
+            if (book.isRecent()) return book;
+        });
 
-    const queryData = async () => {
-        setRefreshing(true);
-        await vimo.queryBooksFromService()
-        setRefreshing(false);
+        setInOffer(inOffer)
+        setBestSeller(bestSeller)
+        setRecommended(recommended)
+        setRecent(recent)
     };
 
-    const CloseIcon = (<EmptyIcon onPress={() => setQuey('')} />)
-    return <View style={[styles.common, styles.body]}>
-        {/* <BookStore
-            testID='books'
-            books={books}
-            refreshing={refreshing}
-            onRefresh={queryData}
-            onScroll={() => Keyboard.dismiss()}
-        /> */}
-    </View>
+    return <ScrollView style={[styles.body, { position: 'relative', height: '110%' }]} contentContainerStyle={styles.common} onScrollEndDrag={(e) => { if (e.nativeEvent.contentOffset.y === 0) displayDataRetrieved() }}>
+        {isLoading && <ActivityIndicator style={{ zIndex: 1, position: 'absolute', top: 10 }} color="black" />}
+        {inOffer && <Bookshelf identifier={"inOffer"} tag={"En Oferta"} books={inOffer} refreshing={refreshing} />}
+        {bestSeller && <Bookshelf identifier={"bestSeller"} tag={"Más Vendido"} books={bestSeller} refreshing={refreshing} />}
+        {recommended && <Bookshelf identifier={"recommended"} tag={"Recomendado"} books={recommended} refreshing={refreshing} />}
+        {recent && <Bookshelf identifier={"recent"} tag={"Reciente"} books={recent} refreshing={refreshing} />}
+    </ScrollView>
 }

@@ -92,7 +92,6 @@ const CardElement = memo((props: { info: any }) => {
         <View style={styles.mainLayout}>
             {/* Card */}
             <View style={[styles.cardLayout, { backgroundColor: theme['background-basic-color-2'] }]}>
-
                 <CardTop
                     price={book.getGrossPricePerUnit()}
                     isInOffer={book.isInOffer()}
@@ -120,9 +119,9 @@ const styles = StyleSheet.create({
     },
     mainLayout: {
         backgroundColor: transparent,
-        width: '45%',
+        width: 158,//'45%',
         height: 300,
-        margin: 9
+        margin: 6
     },
     mainLayoutDisplay: {
         display: "none",
