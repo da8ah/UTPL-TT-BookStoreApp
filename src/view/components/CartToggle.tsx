@@ -16,7 +16,6 @@ export default function CartToggle() {
                 icon={() => <Icon name="close" fill="black" height="30" width="30" />}
                 backgroundColor={theme['color-warning-500']}
                 onPress={() => {
-                    toggleCart()
                     if (navigation.canGoBack()) navigation.goBack()
                     else navigation.navigate('BottomNav', { screen: 'Home' })
                 }}
@@ -35,7 +34,6 @@ const CartButton = () => {
         style={{ position: 'relative', borderWidth: 0, alignItems: 'center', justifyContent: 'center' }}
         onPress={() => {
             // if (!isEditorOpen) vimo.createDraft()
-            toggleCart()
             navigation.navigate('CartOrder')
         }}
     >

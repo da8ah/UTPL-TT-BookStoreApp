@@ -93,7 +93,7 @@ const ItemCenterPanel = (props: { book: ToBuyBook; cant: number; cantUpdater: (c
             </View>
             <View style={{ backgroundColor: transparent, width: "100%", flexDirection: "row", justifyContent: "flex-end" }}>
                 <View style={{ backgroundColor: transparent, alignItems: "center" }}>
-                    <Text style={{ fontSize: 20 }}>💲{price.toFixed(2)}</Text>
+                    <Text style={{ fontSize: 20, color: '#303136' }}>💲{price.toFixed(2)}</Text>
                     <Text
                         style={{
                             backgroundColor: transparent,
@@ -110,7 +110,7 @@ const ItemCenterPanel = (props: { book: ToBuyBook; cant: number; cantUpdater: (c
                     </Text>
                 </View>
                 <View style={{ backgroundColor: transparent, alignItems: "flex-start", flexDirection: "row" }}>
-                    <Text style={{ fontSize: 20 }}> x 📦</Text>
+                    <Text style={{ fontSize: 20, color: '#303136' }}> x 📦</Text>
                     <TouchableOpacity
                         style={{ backgroundColor: "tomato", height: 20, width: 20, borderRadius: 100, justifyContent: "center", alignItems: "center" }}
                         onPressIn={() => {

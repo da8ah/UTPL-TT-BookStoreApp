@@ -1,18 +1,22 @@
 import { useNavigation } from "@react-navigation/native";
 import { Button, Icon, List, Text, useTheme } from "@ui-kitten/components";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import useAppViewModel from "../../hooks/useAppViewModel";
+import useAuth from "../../hooks/useAuth";
+import useCart from "../../hooks/useCart";
+import useThemeMode from "../../hooks/useThemeMode";
 import Cart from "../../model/core/entities/Cart";
 import ToBuyBook from "../../model/core/entities/ToBuyBook";
 import { RootNavProps } from "../routes/types.nav";
 import CartItem from "./layouts/CartItem";
-import useThemeMode from "../../hooks/useThemeMode";
 
 export default function CartOrder() {
     const navigation = useNavigation<RootNavProps>()
     const { themeMode } = useThemeMode()
     const theme = useTheme()
+    const { toggleCart } = useCart()
+    const { isAuth } = useAuth()
 
     const { vimo } = useAppViewModel()
     const [refreshing, setRefreshing] = useState(false);
@@ -26,6 +30,10 @@ export default function CartOrder() {
     const fecha = new Date().toLocaleDateString("ec");
 
     useEffect(() => { }, [cart, books, fecha, descuento, iva, subtotal, total]);
+    useEffect(() => {
+        toggleCart()
+        return () => toggleCart()
+    }, []);
 
     const ButtonIconLeft = () => <Icon name="shopping-cart" fill="white" height="25" width="25" />
     const ButtonIconRight = () => <Icon name="arrow-circle-right-outline" fill="white" height="25" width="25" />
@@ -70,7 +78,7 @@ export default function CartOrder() {
                 // const books = cartViMo.getCart().getToBuyBooks();
                 // if (books !== undefined && books.length > 0) {
                 //     cartViMo.setCallFromCart(true);
-                //     navigation.navigate(clientViMo.isAuth() ? "Order" : "SignIn");
+                isAuth ? navigation.navigate("Payment") : navigation.navigate("BottomNav", { screen: "UserNav", params: { screen: 'SignIn' } });
                 // }
                 // handleCloseModalPress();
             }}

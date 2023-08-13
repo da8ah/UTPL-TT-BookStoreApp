@@ -1,4 +1,3 @@
-import { useNavigation } from "@react-navigation/native";
 import { Button, Icon, Text, useTheme } from "@ui-kitten/components";
 import { useState } from "react";
 import { KeyboardAvoidingView, TouchableWithoutFeedback, View } from "react-native";
@@ -6,11 +5,9 @@ import useAuth from "../../hooks/useAuth";
 import useThemeMode from "../../hooks/useThemeMode";
 import FormInput from "../components/FormInput";
 import LoadingAlert from "../components/LoadingAlert";
-import { UserNavProps } from "../routes/types.nav";
 import { globalStyles as styles } from "../styles/styles";
 
-export default function SignIn() {
-    const navigation = useNavigation<UserNavProps>()
+export default function SignUp() {
     const { isLoading, tryToAuth } = useAuth()
     const { themeMode } = useThemeMode()
     const theme = useTheme();
@@ -33,8 +30,8 @@ export default function SignIn() {
                 <LoadingAlert /> :
                 <>
                     <View style={[styles.common, { flex: 1, paddingVertical: 50 }]}>
-                        <Icon name="people" fill={theme['background-alternative-color-4']} height="100" width="100" />
-                        <Text style={{ fontSize: 30, fontFamily: "serif", fontStyle: "italic" }}>Clientes</Text>
+                        <Icon name="person-add" fill={theme['background-alternative-color-4']} height="100" width="100" />
+                        <Text style={{ fontSize: 30, fontFamily: "serif", fontStyle: "italic" }}>Regístrate</Text>
                     </View>
                     <KeyboardAvoidingView style={{ flex: 2, width: "100%", alignItems: "center" }} behavior="padding">
                         <View style={{ width: '80%' }}>
@@ -69,15 +66,6 @@ export default function SignIn() {
                                 onPress={() => tryToAuth({ user, password })}
                             >
                                 INICIAR SESIÓN
-                            </Button>
-                            <Button
-                                activeOpacity={0.7}
-                                accessoryRight={() => <Icon name="checkmark-square-2-outline" fill="black" height="20" width="20" />}
-                                status="basic"
-                                style={[{ width: '70%', borderWidth: 0, marginTop: 10 }]}
-                                onPress={() => navigation.navigate('SignUp')}
-                            >
-                                Regístrate
                             </Button>
                         </View>
                     </KeyboardAvoidingView>

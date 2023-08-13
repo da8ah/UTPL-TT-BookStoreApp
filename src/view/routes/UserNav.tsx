@@ -2,6 +2,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useEffect } from "react";
 import useAuth from "../../hooks/useAuth";
 import SignIn from "../auth/SignIn";
+import SignUp from "../auth/SignUp";
 import User from "../screens/User";
 import { UserStackParamList } from "./types.nav";
 
@@ -21,6 +22,7 @@ export default function UserNav() {
         {isAuth ? <Stack.Screen name='User' component={User} /> :
             <Stack.Group>
                 <Stack.Screen name='SignIn' component={SignIn} />
+                <Stack.Screen name='SignUp' component={SignUp} options={{ animation: "slide_from_right" }} />
             </Stack.Group>}
     </Stack.Navigator>
 }

@@ -5,7 +5,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack/lib/ty
 export type BottomTabParamList = {
 	Home: undefined,
 	BookStore: undefined,
-	UserNav: undefined
+	UserNav: NavigatorScreenParams<UserStackParamList>
 }
 
 export type TabBarHomeProps = BottomTabScreenProps<BottomTabParamList, 'Home'>
@@ -15,6 +15,7 @@ export type TabBarUserProps = BottomTabScreenProps<BottomTabParamList, 'UserNav'
 export type RootStackParamList = {
 	BottomNav: NavigatorScreenParams<BottomTabParamList>;
 	CartOrder: undefined;
+	Payment: undefined;
 };
 export type UserStackParamList = {
 	User: undefined;
@@ -23,4 +24,5 @@ export type UserStackParamList = {
 };
 
 export type RootNavProps = NativeStackNavigationProp<RootStackParamList, 'BottomNav'>
+export type UserNavProps = NativeStackNavigationProp<UserStackParamList, 'User'>
 export type CartRouteProps = RouteProp<RootStackParamList, "CartOrder">

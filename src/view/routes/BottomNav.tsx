@@ -6,8 +6,10 @@ import BookStore from "../screens/BookStore";
 import Home from "../screens/Home";
 import UserNav from "./UserNav";
 import { BottomTabParamList } from "./types.nav";
+import useKeyboard from "../../hooks/useKeyboard";
 
 const UiKittenBottomTabNav = ({ navigation, state }: BottomTabBarProps) => {
+    const [isKeyboardVisible] = useKeyboard()
     const { themeMode } = useThemeMode()
     const theme = useTheme()
     const indicatorColor = theme['background-alternative-color-1']
@@ -23,7 +25,7 @@ const UiKittenBottomTabNav = ({ navigation, state }: BottomTabBarProps) => {
 
     return (
         <BottomNavigation
-            style={{ backgroundColor: theme['tab-basic-color'], paddingVertical: 2 }}
+            style={{ display: isKeyboardVisible ? 'none' : 'flex', backgroundColor: theme['tab-basic-color'], paddingVertical: 2 }}
             indicatorStyle={{ backgroundColor: themeMode === 'dark' ? theme['color-info-500'] : indicatorColor, height: 2 }}
             selectedIndex={state.index}
             onSelect={(index) => {
@@ -55,7 +57,7 @@ const Tab = createBottomTabNavigator<BottomTabParamList>();
 
 export default function BottomNav() {
     return (
-        <Tab.Navigator initialRouteName="Home" tabBar={(props) => <UiKittenBottomTabNav {...props} />} screenOptions={{ headerShown: false, tabBarHideOnKeyboard: true }}>
+        <Tab.Navigator initialRouteName="Home" tabBar={(props) => <UiKittenBottomTabNav {...props} />} screenOptions={{ headerShown: false }}>
             <Tab.Screen name="Home" component={Home} />
             <Tab.Screen name="BookStore" component={BookStore} />
             <Tab.Screen name="UserNav" component={UserNav} />
