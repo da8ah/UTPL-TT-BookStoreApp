@@ -1,5 +1,5 @@
-import { Button, Text } from "@ui-kitten/components";
-import { ButtonProps, ColorValue } from "react-native";
+import { Button, Text, ButtonProps } from "@ui-kitten/components";
+import {  ColorValue } from "react-native";
 
 export type ActionButtonProps = Omit<ButtonProps, 'title' | 'color'> & {
     children?: JSX.Element | string,

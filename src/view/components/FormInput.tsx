@@ -15,13 +15,14 @@ type BorderBottom = {
 type FormInputProps = (BorderTop | BorderBottom) & {
     title: string
     capitalized?: boolean
-    formColor?: ColorValue
+    formColor?: ColorValue,
+    formMarginVertical?: number
 }
 
 export default function FormInput(props: InputProps & FormInputProps) {
     const { themeMode } = useThemeMode()
     const theme = useTheme()
-    return <View style={styles.inputLayout}>
+    return <View style={[styles.inputLayout, { marginVertical: props.formMarginVertical || 10 }]}>
         <View style={[styles.inputTitle, props.isTop && styles.top, props.isBottom && styles.bottom, props.formColor !== undefined && { backgroundColor: props.formColor }]}>
             <Text adjustsFontSizeToFit style={{ textTransform: props.capitalized ? "capitalize" : "uppercase" }}>{props.title}</Text>
         </View>
@@ -34,7 +35,7 @@ export default function FormInput(props: InputProps & FormInputProps) {
 }
 
 const styles = StyleSheet.create({
-    inputLayout: { backgroundColor: 'transparent', width: "100%", height: 40, maxHeight: 40, flexDirection: "row", justifyContent: "center", marginVertical: 10 },
+    inputLayout: { backgroundColor: 'transparent', width: "100%", height: 40, maxHeight: 40, flexDirection: "row", justifyContent: "center" },
     inputTitle: { backgroundColor: "darkgrey", width: "30%", justifyContent: "center", alignItems: "center" },
     input: {
         width: "70%",

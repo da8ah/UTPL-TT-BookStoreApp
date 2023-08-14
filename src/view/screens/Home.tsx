@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
-import { ActivityIndicator, ScrollView, View } from "react-native";
-import { BooksObserver } from "../../hooks/useAppViewModel";
+import { useCallback, useEffect, useState } from "react";
+import { ActivityIndicator, ScrollView } from "react-native";
 import useBooks from "../../hooks/useBooks";
 import StockBook from "../../model/core/entities/StockBook";
 import { globalStyles as styles } from "../styles/styles";
@@ -17,7 +16,8 @@ export default function Home() {
     useEffect(() => { displayDataRetrieved() }, [])
     useEffect(() => { }, [inOffer, bestSeller, recommended, recent])
 
-    const displayDataRetrieved: BooksObserver = () => {
+
+    const displayDataRetrieved = useCallback(() => {
         queryBooks()
         const inOffer = books.filter((book) => {
             if (book.isInOffer()) return book;
@@ -36,7 +36,7 @@ export default function Home() {
         setBestSeller(bestSeller)
         setRecommended(recommended)
         setRecent(recent)
-    };
+    }, [books]);
 
     return <ScrollView style={[styles.body, { position: 'relative', height: '110%' }]} contentContainerStyle={styles.common} onScrollEndDrag={(e) => { if (e.nativeEvent.contentOffset.y === 0) displayDataRetrieved() }}>
         {isLoading && <ActivityIndicator style={{ zIndex: 1, position: 'absolute', top: 10 }} color="black" />}

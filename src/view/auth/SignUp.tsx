@@ -1,76 +1,169 @@
-import { Button, Icon, Text, useTheme } from "@ui-kitten/components";
-import { useState } from "react";
-import { KeyboardAvoidingView, TouchableWithoutFeedback, View } from "react-native";
-import useAuth from "../../hooks/useAuth";
-import useThemeMode from "../../hooks/useThemeMode";
-import FormInput from "../components/FormInput";
-import LoadingAlert from "../components/LoadingAlert";
+import { useNavigation } from "@react-navigation/native";
+import { Icon, useTheme } from "@ui-kitten/components";
+import { useEffect, useState } from "react";
+import { KeyboardAvoidingView, View } from "react-native";
+import { useFormState, useFormStore } from "../../hooks/useForm";
+import { patterns } from "../../utils/validations";
+import ActionButton from "../components/ActionButton";
+import { UserNavProps } from "../routes/types.nav";
+import { FormLayoutBasic, FormLayoutBilling } from "../screens/layouts/FormLayouts";
 import { globalStyles as styles } from "../styles/styles";
 
 export default function SignUp() {
-    const { isLoading, tryToAuth } = useAuth()
-    const { themeMode } = useThemeMode()
-    const theme = useTheme();
+    const navigation = useNavigation<UserNavProps>()
+    const theme = useTheme()
 
-    const [user, setUser] = useState<string>('da8ah.tiber');
-    const [password, setPassword] = useState<string>('tibernuncamuere');
-    const [secureTextEntry, setSecureTextEntry] = useState(true);
-    const togglePasswordVisibility = () => {
-        setSecureTextEntry(!secureTextEntry);
-    };
-    const PasswordVisibilityIcon = () => (
-        <TouchableWithoutFeedback onPress={togglePasswordVisibility}>
-            <Icon name={secureTextEntry ? "eye-off" : "eye"} fill={themeMode === 'dark' ? theme['color-basic-500'] : 'black'} height="22" width="22" />
-        </TouchableWithoutFeedback>
-    );
+    const { client, resetClient } = useFormStore()
+    const {
+        userCheck,
+        nameCheck,
+        emailCheck,
+        mobileCheck,
+        passwordCheck,
+        user,
+        name,
+        email,
+        mobile,
+        password,
+
+        toWhomCheck,
+        ciCheck,
+        provinciaCheck,
+        ciudadCheck,
+        numCasaCheck,
+        callesCheck,
+        toWhom,
+        ci,
+        provincia,
+        ciudad,
+        numCasa,
+        calles,
+
+        setCheck,
+        setProperty,
+        cleanBasic,
+        cleanBillingInfo
+    } = useFormState()
+    const [isBasicValid, setBasicValidity] = useState(false)
+
+    useEffect(() => {
+        setProperty('user', client.getUser())
+        setProperty('name', client.getName())
+        setProperty('email', client.getEmail())
+        setProperty('mobile', client.getMobile())
+        setProperty('password', client.getPassword())
+        setProperty('toWhom', client.getBillingInfo().getToWhom())
+        setProperty('ci', client.getBillingInfo().getCi())
+        setProperty('provincia', client.getBillingInfo().getProvincia())
+        setProperty('ciudad', client.getBillingInfo().getCiudad())
+        setProperty('numCasa', client.getBillingInfo().getNumCasa())
+        setProperty('calles', client.getBillingInfo().getCalles())
+    }, [])
+
+    const validateBasic = () => {
+        const userCheck = new RegExp(patterns.User.USER).test(user.trim())
+        const nameCheck = new RegExp(patterns.User.NAME).test(name.trim())
+        const emailCheck = new RegExp(patterns.User.EMAIL).test(email.trim())
+        const mobileCheck = new RegExp(patterns.User.MOBILE).test(mobile.trim())
+        const passwordCheck = new RegExp(patterns.User.PASSWORD).test(password)
+        setCheck('user', userCheck)
+        setCheck('name', nameCheck)
+        setCheck('email', emailCheck)
+        setCheck('mobile', mobileCheck)
+        setCheck('password', passwordCheck)
+        return userCheck && nameCheck && emailCheck && mobileCheck && passwordCheck
+    }
+    const validateBillingInfo = () => {
+        setCheck('toWhom', new RegExp(patterns.BillingInfo.TO_WHOM).test(toWhom.trim()))
+        setCheck('ci', new RegExp(patterns.BillingInfo.CI).test(ci.trim()))
+        setCheck('provincia', new RegExp(patterns.BillingInfo.PROVINCIA).test(provincia.trim()))
+        setCheck('ciudad', new RegExp(patterns.BillingInfo.CIUDAD).test(ciudad.trim()))
+        setCheck('numCasa', new RegExp(patterns.BillingInfo.NUM_CASA).test(numCasa.trim()))
+        setCheck('calles', new RegExp(patterns.BillingInfo.CALLES).test(calles.trim()))
+    }
+
+    const bottomButtons = [
+        {
+            iconName: "arrow-circle-left",
+            backgroundColor: theme['color-warning-500'],
+            onPress: () => {
+                if (!isBasicValid) {
+                    navigation.navigate('SignIn')
+                } else {
+                    setBasicValidity(false)
+                }
+
+            }
+        },
+        {
+            iconName: "trash-2",
+            backgroundColor: theme['color-danger-500'],
+            onPress: !isBasicValid ? cleanBasic : cleanBillingInfo,
+            onLongPress: () => { resetClient(); cleanBasic(); cleanBillingInfo(); setBasicValidity(false) }
+        },
+        {
+            iconName: "save",
+            backgroundColor: !isBasicValid ? theme['color-info-500'] : theme['color-success-500'],
+            onPress: () => {
+                if (!isBasicValid) {
+                    setBasicValidity(validateBasic())
+                } else {
+                    validateBillingInfo()
+                }
+            }
+        },
+    ]
 
     return (
         <View testID="test-signin" style={[styles.common, styles.body]}>
-            {isLoading ?
-                <LoadingAlert /> :
-                <>
-                    <View style={[styles.common, { flex: 1, paddingVertical: 50 }]}>
-                        <Icon name="person-add" fill={theme['background-alternative-color-4']} height="100" width="100" />
-                        <Text style={{ fontSize: 30, fontFamily: "serif", fontStyle: "italic" }}>Regístrate</Text>
-                    </View>
-                    <KeyboardAvoidingView style={{ flex: 2, width: "100%", alignItems: "center" }} behavior="padding">
-                        <View style={{ width: '80%' }}>
-                            <FormInput
-                                isTop
-                                keyboardType="email-address"
-                                textContentType="emailAddress"
-                                formColor={theme['background-basic-color-2']}
-                                title="Usuario"
-                                placeholder="Usuario"
-                                defaultValue={user}
-                                onChangeText={input => setUser(input)}
-                            />
-                            <FormInput
-                                isBottom
-                                formColor={theme['background-basic-color-2']}
-                                textContentType="password"
-                                accessoryRight={PasswordVisibilityIcon}
-                                secureTextEntry={secureTextEntry}
-                                title="Clave"
-                                placeholder="Clave"
-                                defaultValue={password}
-                                onChangeText={input => setPassword(input)}
-                            />
-                        </View>
-                        <View style={[styles.common, { justifyContent: 'flex-start', width: '100%', marginVertical: 30 }]}>
-                            <Button
-                                testID="button-auth"
-                                activeOpacity={0.7}
-                                accessoryRight={() => <Icon name="log-in" fill="white" height="20" width="20" />}
-                                style={[{ width: '70%', backgroundColor: theme['color-info-500'], borderWidth: 0 }]}
-                                onPress={() => tryToAuth({ user, password })}
-                            >
-                                INICIAR SESIÓN
-                            </Button>
-                        </View>
-                    </KeyboardAvoidingView>
-                </>
-            }
+            <View style={[styles.common, { marginVertical: 10 }]}>
+                <Icon name="person-add" fill={theme['background-alternative-color-4']} height="100" width="100" />
+            </View>
+            <KeyboardAvoidingView style={{ width: "100%", alignItems: "center" }} behavior="padding">
+                {!isBasicValid ?
+                    <FormLayoutBasic data={{
+                        userCheck,
+                        nameCheck,
+                        emailCheck,
+                        mobileCheck,
+                        passwordCheck,
+                        user,
+                        name,
+                        email,
+                        mobile,
+                        password,
+                        setCheck,
+                        setProperty
+                    }} />
+                    :
+                    <FormLayoutBilling data={{
+                        toWhomCheck,
+                        ciCheck,
+                        provinciaCheck,
+                        ciudadCheck,
+                        numCasaCheck,
+                        callesCheck,
+                        toWhom,
+                        ci,
+                        provincia,
+                        ciudad,
+                        numCasa,
+                        calles,
+                        setCheck,
+                        setProperty
+                    }} />
+                }
+            </KeyboardAvoidingView>
+            <View style={[styles.common, { flexDirection: 'row', justifyContent: 'space-around', width: '100%', marginVertical: 30 }]}>
+                {bottomButtons.map((button, index) => {
+                    return <ActionButton key={`user-action-button-${index}`}
+                        icon={() => <Icon name={button.iconName} fill="white" height="30" width="30" />}
+                        backgroundColor={button.backgroundColor}
+                        onPress={button.onPress}
+                        onLongPress={button.onLongPress}
+                    />
+                })}
+            </View>
         </View>
     )
 }

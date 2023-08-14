@@ -6,6 +6,7 @@ import BookCard from "./BookCard";
 const styles = StyleSheet.create({
     shelf: {
         flex: 1,
+        width: '100%',
         marginVertical: 20
     }
 });

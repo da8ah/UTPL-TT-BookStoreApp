@@ -1,7 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
 import { Button, Icon, Text, useTheme } from "@ui-kitten/components";
 import { useState } from "react";
-import { KeyboardAvoidingView, TouchableWithoutFeedback, View } from "react-native";
+import { KeyboardAvoidingView, TouchableOpacity, View } from "react-native";
 import useAuth from "../../hooks/useAuth";
 import useThemeMode from "../../hooks/useThemeMode";
 import FormInput from "../components/FormInput";
@@ -22,9 +22,9 @@ export default function SignIn() {
         setSecureTextEntry(!secureTextEntry);
     };
     const PasswordVisibilityIcon = () => (
-        <TouchableWithoutFeedback onPress={togglePasswordVisibility}>
+        <TouchableOpacity onPress={togglePasswordVisibility}>
             <Icon name={secureTextEntry ? "eye-off" : "eye"} fill={themeMode === 'dark' ? theme['color-basic-500'] : 'black'} height="22" width="22" />
-        </TouchableWithoutFeedback>
+        </TouchableOpacity>
     );
 
     return (
@@ -51,6 +51,7 @@ export default function SignIn() {
                             <FormInput
                                 isBottom
                                 formColor={theme['background-basic-color-2']}
+                                keyboardType={!secureTextEntry ? "visible-password" : undefined}
                                 textContentType="password"
                                 accessoryRight={PasswordVisibilityIcon}
                                 secureTextEntry={secureTextEntry}

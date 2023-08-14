@@ -89,7 +89,7 @@ const CardElement = memo((props: { info: any }) => {
     const theme = useTheme()
     const book = props.info.item
     return (
-        <View style={styles.mainLayout}>
+        <View style={[styles.mainLayout, { shadowColor: theme['background-alternative-color-4'] }]}>
             {/* Card */}
             <View style={[styles.cardLayout, { backgroundColor: theme['background-basic-color-2'] }]}>
                 <CardTop
@@ -121,7 +121,13 @@ const styles = StyleSheet.create({
         backgroundColor: transparent,
         width: 158,//'45%',
         height: 300,
-        margin: 6
+        margin: 6,
+        shadowOpacity: 1,
+        shadowRadius: 10,
+        shadowOffset: {
+            height: 20,
+            width: 20,
+        }
     },
     mainLayoutDisplay: {
         display: "none",
