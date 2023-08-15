@@ -1,24 +1,19 @@
 import StockBook from "../model/core/entities/StockBook";
+import ToBuyBook from "../model/core/entities/ToBuyBook";
 
 export default class ObjectCloner {
-    public static stockBook(stockBook: StockBook) {
-        return new StockBook(
+    public static stockToBuyBook(stockBook: StockBook) {
+        return new ToBuyBook(
             stockBook.getIsbn(),
             stockBook.getImgRef(),
             stockBook.getTitle(),
             stockBook.getAuthor(),
             stockBook.getReleaseDate(),
-            stockBook.getCreatedDate(),
-            stockBook.getDescription(),
             stockBook.getGrossPricePerUnit(),
             stockBook.isInOffer(),
             stockBook.getDiscountPercentage(),
             stockBook.itHasIva(),
-            stockBook.getStock(),
-            stockBook.isVisible(),
-            stockBook.isRecommended(),
-            stockBook.isBestSeller(),
-            stockBook.isRecent(),
+            0
         );
     }
 }

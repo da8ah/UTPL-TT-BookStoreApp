@@ -1,7 +1,10 @@
-import { Button, Input, Modal, Text } from "@ui-kitten/components";
-import { useEffect, useState } from "react";
-import { Image, ListRenderItem, ListRenderItemInfo, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Text } from "@ui-kitten/components";
+import { useState } from "react";
+import { Image, Keyboard, ListRenderItem, ListRenderItemInfo, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import useCart from "../../../hooks/useCart";
 import ToBuyBook from "../../../model/core/entities/ToBuyBook";
+import ModalDisplay from "../../components/ModalDisplay";
+import ModalCant from "./ModalCant";
 
 const transparent = "transparent";
 const styles = StyleSheet.create({
@@ -13,14 +16,15 @@ const styles = StyleSheet.create({
     },
     cardLayout: {
         flexDirection: "row",
+        justifyContent: "space-between",
         height: 100,
         padding: 2,
         margin: 2,
         borderRadius: 7,
     },
-    cardLeft: { backgroundColor: transparent, width: "30%" },
-    cardCenter: { backgroundColor: transparent, width: "35%", justifyContent: "space-around" },
-    cardRight: { backgroundColor: transparent, width: "35%" },
+    cardLeft: { backgroundColor: "white", width: "30%", borderTopLeftRadius: 7, borderBottomLeftRadius: 7 },
+    cardCenter: { backgroundColor: transparent, width: "50%", justifyContent: "space-around" },
+    cardRight: { backgroundColor: transparent, width: "50%" },
     imageLayout: { backgroundColor: transparent, height: 75, alignItems: "center", borderRadius: 5 },
     image: {
         height: 75,
@@ -33,24 +37,30 @@ const CartItem: ListRenderItem<ToBuyBook> = (info: ListRenderItemInfo<ToBuyBook>
 export default CartItem;
 
 const CardToBuyBook = (props: { book: ToBuyBook; index: number }) => {
-    const [bcc, setBcc] = useState("palegoldenrod");
-    const [cant, setCant] = useState(props.book.getCant() || 0);
-
-    useEffect(() => { }, [cant]);
+    const { rmBookFromCart } = useCart()
+    const [isPressed, setPressedState] = useState(false);
 
     return (
-        <TouchableOpacity
-            style={[styles.cardLayout, { backgroundColor: bcc }]}
-            onPressIn={() => setBcc("tomato")}
-            onPressOut={() => setBcc("palegoldenrod")}
-            onLongPress={() => {
-                // cartViMo.removeBookFromCart(props.index);
-            }}
-        >
+        <View style={styles.cardLayout}>
             <ItemLeftPanel book={props.book} />
-            <ItemCenterPanel book={props.book} cant={cant} cantUpdater={setCant} />
-            <ItemRightPanel book={props.book} cant={cant} />
-        </TouchableOpacity>
+            <TouchableOpacity
+                style={{
+                    backgroundColor: isPressed ? "tomato" : "palegoldenrod",
+                    width: '70%',
+                    flexDirection: "row",
+                    justifyContent: "center",
+                    borderTopRightRadius: 7,
+                    borderBottomRightRadius: 7
+                }}
+                activeOpacity={1}
+                onPressIn={() => setPressedState(true)}
+                onPressOut={() => setPressedState(false)}
+                onLongPress={() => rmBookFromCart(props.book)}
+            >
+                <ItemCenterPanel book={props.book} cant={props.book.getCant()} />
+                <ItemRightPanel book={props.book} cant={props.book.getCant()} />
+            </TouchableOpacity>
+        </View>
     );
 };
 
@@ -59,7 +69,7 @@ const ItemLeftPanel = (props: { book: ToBuyBook }) => {
     return (
         <View style={styles.cardLeft}>
             <View style={styles.imageLayout}>
-                {/* <Image style={styles.image} source={require("@Assets/bookstore.png")} /> */}
+                <Image style={styles.image} source={require("@Assets/bookstore.png")} />
             </View>
             <ScrollView
                 style={{ height: 25 }}
@@ -69,15 +79,15 @@ const ItemLeftPanel = (props: { book: ToBuyBook }) => {
                 fadingEdgeLength={50}
                 contentContainerStyle={{ height: 20 }}
             >
-                <Text style={{ fontSize: 12, textAlignVertical: "center" }}>{title}</Text>
+                <Text style={{ fontSize: 12, color: "black", textAlignVertical: "center" }}>{title}</Text>
             </ScrollView>
         </View>
     );
 };
 
-const ItemCenterPanel = (props: { book: ToBuyBook; cant: number; cantUpdater: (cant: number) => void }) => {
+const ItemCenterPanel = (props: { book: ToBuyBook; cant: number }) => {
+    const { addBookToCart } = useCart()
     const [modalVisibility, setModalVisibility] = useState(false);
-    const [modalChildren, setModalChildren] = useState<JSX.Element>();
 
     const grossPrice = props.book.getGrossPricePerUnit() || 0;
     const discountAmount = props.book.getDiscountedAmount() || 0;
@@ -93,7 +103,7 @@ const ItemCenterPanel = (props: { book: ToBuyBook; cant: number; cantUpdater: (c
             </View>
             <View style={{ backgroundColor: transparent, width: "100%", flexDirection: "row", justifyContent: "flex-end" }}>
                 <View style={{ backgroundColor: transparent, alignItems: "center" }}>
-                    <Text style={{ fontSize: 20, color: '#303136' }}>💲{price.toFixed(2)}</Text>
+                    <Text style={{ fontSize: 16, color: '#303136' }}>💲{price.toFixed(2)}</Text>
                     <Text
                         style={{
                             backgroundColor: transparent,
@@ -113,22 +123,25 @@ const ItemCenterPanel = (props: { book: ToBuyBook; cant: number; cantUpdater: (c
                     <Text style={{ fontSize: 20, color: '#303136' }}> x 📦</Text>
                     <TouchableOpacity
                         style={{ backgroundColor: "tomato", height: 20, width: 20, borderRadius: 100, justifyContent: "center", alignItems: "center" }}
-                        onPressIn={() => {
-                            setModalChildren(<ModalCant book={props.book} cantUpdater={props.cantUpdater} setModalVisibility={setModalVisibility} />);
-                            setModalVisibility(true);
-                        }}
+                        onPressIn={() => setModalVisibility(true)}
                     >
                         <Text style={{ color: "white", fontSize: 10, fontWeight: "bold" }}>{props.cant}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
-            <Modal
+            <ModalDisplay
                 visible={modalVisibility}
-                style={{ width: "70%" }}
-                backdropStyle={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
-                onBackdropPress={() => setModalVisibility(false)}
-                children={modalChildren}
-            />
+                onBackdropPress={() => { if (Keyboard.isVisible()) Keyboard.dismiss(); setModalVisibility(false) }}
+            >
+                <ModalCant
+                    isCart
+                    cant={props.book.getCant()}
+                    onButtonPress={stock => {
+                        addBookToCart(props.book, stock)
+                        setModalVisibility(false)
+                    }}
+                />
+            </ModalDisplay>
         </View>
     );
 };
@@ -141,56 +154,6 @@ const ItemRightPanel = (props: { book: ToBuyBook; cant: number }) => {
             <Text style={{ color: "yellowgreen", fontSize: 25, fontWeight: "bold", textAlign: "left" }} numberOfLines={1}>
                 💲{totalPrice.toFixed(2)}
             </Text>
-        </View>
-    );
-};
-
-const ModalCant = (props: { book: ToBuyBook; cantUpdater: (cant: number) => void; setModalVisibility: (value: boolean) => void }) => {
-    const [cant, setCant] = useState("0");
-    const stock = 0.0 || 0
-    return (
-        <View style={{ alignItems: "center", padding: 20, borderRadius: 20 }}>
-            <View style={{ flexDirection: "row", justifyContent: "center" }}>
-                <Text style={{ textAlign: "right" }}>Cantidad de Artículos </Text>
-                <Text style={{ width: "20%", textAlign: "center" }}>
-                    {Number(cant) !== 0 ? cant : "0"}/{stock.toFixed(0)}
-                </Text>
-            </View>
-            <View style={{ marginVertical: 20 }}>
-                <Input
-                    selectTextOnFocus
-                    keyboardType="phone-pad"
-                    size="small"
-                    textAlign="center"
-                    cursorColor='black'
-                    defaultValue={cant}
-                    value={cant}
-                    onChangeText={(newCant) => {
-                        const pattern = /^\d{0,2}$/;
-                        if (!Number.isNaN(Number(newCant)) && new RegExp(pattern).test(newCant)) setCant(newCant);
-                    }}
-                />
-            </View>
-            <Button
-                status="danger"
-                size="small"
-                style={{ width: "50%" }}
-                onPress={() => {
-                    if (stock) {
-                        if (Number.parseInt(cant) > stock) {
-                            setCant('0');
-                            return;
-                        }
-                        if (Number.parseInt(cant) > 0 && Number.parseInt(cant) <= stock) {
-                            // cartViMo.updateCantToBuy(props.book, Number.parseInt(cant));
-                            props.cantUpdater(Number.parseInt(cant));
-                        }
-                        props.setModalVisibility(false);
-                    }
-                }}
-            >
-                Confirmar
-            </Button>
         </View>
     );
 };

@@ -14,11 +14,11 @@ export default class Cart {
 
 	public calculate() {
 		const books = this.toBuyBooks;
+		let discountAcc = 0;
+		let ivaAcc = 0;
+		let subtotal = 0;
+		let totalPrice = 0;
 		if (books.length > 0) {
-			let discountAcc = 0;
-			let ivaAcc = 0;
-			let subtotal = 0;
-			let totalPrice = 0;
 			for (const book of books) {
 				const cant = book.getCant();
 				const discount = book.getDiscountedAmount();
@@ -32,11 +32,11 @@ export default class Cart {
 				subtotal = subtotal + grossPricePerUnit * cant;
 				totalPrice = totalPrice + priceCalcPerUnit * cant;
 			}
-			this.discountCalc = discountAcc;
-			this.ivaCalc = ivaAcc;
-			this.subtotal = subtotal;
-			this.totalPrice = totalPrice;
 		}
+		this.discountCalc = discountAcc;
+		this.ivaCalc = ivaAcc;
+		this.subtotal = subtotal;
+		this.totalPrice = totalPrice;
 	}
 
 	// Getters

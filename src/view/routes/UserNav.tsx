@@ -27,7 +27,7 @@ export default function UserNav() {
             </Stack.Group>
             :
             <Stack.Group>
-                <Stack.Screen name='SignIn' component={SignIn} />
+                <Stack.Screen name='SignIn' component={SignIn} initialParams={{ calledFromPayment: false }} />
                 <Stack.Screen name='SignUp' component={SignUp} options={{ animation: "slide_from_right" }} />
             </Stack.Group>}
     </Stack.Navigator>

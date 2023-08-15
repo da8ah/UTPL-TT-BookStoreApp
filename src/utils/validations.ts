@@ -2,6 +2,9 @@ import BillingInfo from "../model/core/entities/BillingInfo";
 import User from "../model/core/entities/User";
 
 export const patterns = {
+	ModalInputs: {
+		STOCK: /^\d{0,4}$/,
+	},
 	User: {
 		USER: /^[A-Za-z]((\_|\.)?[A-Za-z0-9]){5,19}$/,
 		NAME: /^[A-Za-zÁáÉéÍíÓóÚúÜüÑñ]{1,15}(\s[A-Za-zÁáÉéÍíÓóÚúÜüÑñ]{1,15}){1,4}$/,

@@ -4,6 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 import { Button, Icon, Layout, Modal, Text } from "@ui-kitten/components";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, KeyboardAvoidingView, StyleSheet } from "react-native";
+import useCart from "../../hooks/useCart";
 import Cart from "../../model/core/entities/Cart";
 import ToBuyBook from "../../model/core/entities/ToBuyBook";
 import { RootStackParamList } from "../routes/types.nav";
@@ -35,6 +36,8 @@ const styles = StyleSheet.create({
 });
 
 const Payment = () => {
+    const { togglePayment } = useCart()
+
     const [modalVisibility, setModalVisibility] = useState(false);
     const [modalChildren, setModalChildren] = useState<JSX.Element>();
 
@@ -48,7 +51,9 @@ const Payment = () => {
     useEffect(() => { }, [publishableKey]);
 
     useEffect(() => {
+        togglePayment()
         // tryToGetKey();
+        return () => togglePayment()
     }, []);
 
     return (

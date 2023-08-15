@@ -1,9 +1,13 @@
-import { useNavigation } from "@react-navigation/native";
 import { Button, Icon, Text, useTheme } from "@ui-kitten/components";
-import { memo } from "react";
+import { memo, useState } from "react";
 import { Image, ListRenderItemInfo, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import useBooks from "../../../hooks/useBooks";
+import useCart from "../../../hooks/useCart";
 import StockBook from "../../../model/core/entities/StockBook";
-import { RootNavProps } from "../../routes/types.nav";
+import ObjectCloner from "../../../utils/cloner";
+import ModalDisplay from "../../components/ModalDisplay";
+import ModalCant from "./ModalCant";
+import { Keyboard } from "react-native";
 
 const CardTop = (props: { price: number; isInOffer: boolean; discountPercentage: number }) => (
     <View style={[styles.common, styles.cardTop]}>
@@ -47,10 +51,13 @@ const CardBottom = (props: { title: string; author: string; }) => {
 };
 
 const ButtonIcon = () => <Icon name="plus-circle" fill="white" height="15" width="15" />;
-const CardButton = (props: { bookISBN: string }) => {
-    // const { vimo } = useAppViewModel()
+const CardActions = (props: { bookISBN: string }) => {
     const theme = useTheme()
-    const navigation = useNavigation<RootNavProps>();
+
+    const { books } = useBooks()
+    const { addBookToCart } = useCart()
+    const [cant, setCant] = useState(1)
+    const [modalVisibility, setModalVisibility] = useState(false)
 
     return (
         <View style={[styles.common, styles.buttonLayout]}>
@@ -60,8 +67,8 @@ const CardButton = (props: { bookISBN: string }) => {
                 status="info"
                 size="tiny"
                 onPress={() => {
-                    // vimo.createDraftByISBN(props.bookISBN)
-                    // navigation.navigate("BookEditor", { bookISBN: props.bookISBN })
+                    const book = books.find(book => book.getIsbn() === props.bookISBN)
+                    if (book) addBookToCart(ObjectCloner.stockToBuyBook(book), cant)
                 }}
             >
                 AGREGAR
@@ -70,13 +77,26 @@ const CardButton = (props: { bookISBN: string }) => {
                 <TouchableOpacity
                     style={{ backgroundColor: theme['color-info-500'], height: 25, width: 25, borderRadius: 100, justifyContent: "center", alignItems: "center" }}
                     onPressIn={() => {
-                        // setModalChildren(<ModalCant stock={props.book.getStock()} cantUpdater={setCant} setModalVisibility={setModalVisibility} />);
-                        // setModalVisibility(true);
+                        setModalVisibility(true)
                     }}
                 >
-                    <Text style={{ color: "white", fontSize: 10, fontWeight: "bold" }}>{1}</Text>
+                    <Text style={{ color: "white", fontSize: 10, fontWeight: "bold" }}>{cant}</Text>
                 </TouchableOpacity>
             </View>
+            <ModalDisplay
+                visible={modalVisibility}
+                onBackdropPress={() => { if (Keyboard.isVisible()) Keyboard.dismiss(); setModalVisibility(false) }}
+            >
+                <ModalCant
+                    cant={cant}
+                    onButtonPress={stock => {
+                        const book = books.find(book => book.getIsbn() === props.bookISBN)
+                        if (book) addBookToCart(ObjectCloner.stockToBuyBook(book), stock)
+                        setCant(stock)
+                        setModalVisibility(false)
+                    }}
+                />
+            </ModalDisplay>
         </View>
     );
 };
@@ -103,7 +123,7 @@ const CardElement = memo((props: { info: any }) => {
                 />
             </View>
             {/* Button */}
-            <CardButton bookISBN={book.getIsbn()} />
+            <CardActions bookISBN={book.getIsbn()} />
         </View>
     );
 })

@@ -1,35 +1,20 @@
 import { useNavigation } from "@react-navigation/native";
 import { Button, Icon, List, Text, useTheme } from "@ui-kitten/components";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { StyleSheet, View } from "react-native";
-import useAppViewModel from "../../hooks/useAppViewModel";
 import useAuth from "../../hooks/useAuth";
 import useCart from "../../hooks/useCart";
-import useThemeMode from "../../hooks/useThemeMode";
-import Cart from "../../model/core/entities/Cart";
-import ToBuyBook from "../../model/core/entities/ToBuyBook";
 import { RootNavProps } from "../routes/types.nav";
 import CartItem from "./layouts/CartItem";
 
 export default function CartOrder() {
     const navigation = useNavigation<RootNavProps>()
-    const { themeMode } = useThemeMode()
     const theme = useTheme()
-    const { toggleCart } = useCart()
     const { isAuth } = useAuth()
 
-    const { vimo } = useAppViewModel()
-    const [refreshing, setRefreshing] = useState(false);
+    const { myCart, toggleCart } = useCart()
+    const fecha = new Date().toLocaleDateString("ec")
 
-    const [cart, setCart] = useState<Cart>(new Cart([new ToBuyBook('', '', '', '', '', 20, false, 0, false, 1)]));
-    const [books, setBooks] = useState(cart.getToBuyBooks());
-    const [descuento, setDescuento] = useState(cart.getDiscountCalc() || 0);
-    const [iva, setIva] = useState(cart?.getIvaCalc() || 0);
-    const [subtotal, setSubtotal] = useState(cart.getSubtotal() || 0);
-    const [total, setTotal] = useState(cart.getTotalPrice() || 0);
-    const fecha = new Date().toLocaleDateString("ec");
-
-    useEffect(() => { }, [cart, books, fecha, descuento, iva, subtotal, total]);
     useEffect(() => {
         toggleCart()
         return () => toggleCart()
@@ -43,30 +28,38 @@ export default function CartOrder() {
                 En mi Carrito
             </Text>
         </View>
-        <View style={styles.cartStatus}>
+        <View style={[styles.cartStatus, { backgroundColor: 'white' }]}>
             <View style={[styles.statusLayouts, { width: "20%" }]}>
-                <Text style={{ fontWeight: "bold" }}>Fecha</Text>
+                <Text style={{ color: 'black', fontWeight: "bold" }}>Fecha</Text>
                 <Text style={[styles.statusProperties, { fontWeight: "normal" }]}>{fecha}</Text>
             </View>
             <View style={[styles.statusLayouts]}>
                 <Text style={[styles.statusProperties]}>Subtotal</Text>
-                <Text style={[styles.statusProperties, { fontSize: 13 }]}>{subtotal.toFixed(2)}</Text>
+                <Text style={[styles.statusProperties, { fontSize: 13 }]}>{myCart.getSubtotal().toFixed(2)}</Text>
             </View>
             <View style={[styles.statusLayouts]}>
                 <Text style={[styles.statusProperties]}>IVA</Text>
-                <Text style={[styles.statusProperties, { color: "darkred" }]}>+{iva.toFixed(2)}</Text>
+                <Text style={[styles.statusProperties, { color: "darkred" }]}>+{myCart.getIvaCalc().toFixed(2)}</Text>
             </View>
             <View style={[styles.statusLayouts]}>
                 <Text style={[styles.statusProperties]}>Descuento</Text>
-                <Text style={[styles.statusProperties, { color: "darkgreen" }]}>-{descuento.toFixed(2)}</Text>
+                <Text style={[styles.statusProperties, { color: "darkgreen" }]}>-{myCart.getDiscountCalc().toFixed(2)}</Text>
             </View>
             <View style={[styles.statusLayouts, { backgroundColor: "orange", width: "25%", borderTopLeftRadius: 10, borderBottomLeftRadius: 10 }]}>
                 <Text style={[styles.statusProperties, { width: "100%", fontSize: 18 }]}>TOTAL</Text>
-                <Text style={[styles.statusProperties, { width: "100%", fontSize: 18 }]}>$ {total.toFixed(2)}</Text>
+                <Text style={[styles.statusProperties, { width: "100%", fontSize: 18 }]}>$ {myCart.getTotalPrice().toFixed(2)}</Text>
             </View>
         </View>
         <View style={styles.cartBooks}>
-            <List scrollEnabled data={books} extraData={books} renderItem={CartItem} refreshing={refreshing} />
+            <List
+                style={{ backgroundColor: theme['background-basic-color-2'] }}
+                contentContainerStyle={{ backgroundColor: theme['background-basic-color-2'] }}
+                scrollEnabled
+                data={myCart.getToBuyBooks()}
+                extraData={myCart.getToBuyBooks()}
+                renderItem={CartItem}
+                refreshing={false}
+            />
         </View>
         <Button
             size="large"
@@ -75,12 +68,7 @@ export default function CartOrder() {
             accessoryLeft={ButtonIconLeft}
             accessoryRight={ButtonIconRight}
             onPress={() => {
-                // const books = cartViMo.getCart().getToBuyBooks();
-                // if (books !== undefined && books.length > 0) {
-                //     cartViMo.setCallFromCart(true);
-                isAuth ? navigation.navigate("Payment") : navigation.navigate("BottomNav", { screen: "UserNav", params: { screen: 'SignIn' } });
-                // }
-                // handleCloseModalPress();
+                if (myCart.getToBuyBooks().length > 0) isAuth ? navigation.navigate("Payment") : navigation.navigate("BottomNav", { screen: "UserNav", params: { screen: 'SignIn', params: { calledFromPayment: true } } });
             }}
         >
             Ir a CAJA
@@ -102,5 +90,5 @@ const styles = StyleSheet.create({
     cartBooks: { flex: 25 },
     button: {},
     statusLayouts: { backgroundColor: "transparent", alignItems: "center", paddingVertical: 5 },
-    statusProperties: { textAlign: "center", fontSize: 12, fontWeight: "bold" },
+    statusProperties: { color: 'black', textAlign: "center", fontSize: 12, fontWeight: "bold" },
 });

@@ -6,10 +6,11 @@ import useAuth from "../../hooks/useAuth";
 import useThemeMode from "../../hooks/useThemeMode";
 import FormInput from "../components/FormInput";
 import LoadingAlert from "../components/LoadingAlert";
-import { UserNavProps } from "../routes/types.nav";
+import { RootNavProps, SignInRouteProps, UserNavProps } from "../routes/types.nav";
 import { globalStyles as styles } from "../styles/styles";
 
-export default function SignIn() {
+export default function SignIn({ route }: { route: SignInRouteProps }) {
+    const rootNavigation = useNavigation<RootNavProps>()
     const navigation = useNavigation<UserNavProps>()
     const { isLoading, tryToAuth } = useAuth()
     const { themeMode } = useThemeMode()
@@ -67,7 +68,15 @@ export default function SignIn() {
                                 activeOpacity={0.7}
                                 accessoryRight={() => <Icon name="log-in" fill="white" height="20" width="20" />}
                                 style={[{ width: '70%', backgroundColor: theme['color-info-500'], borderWidth: 0 }]}
-                                onPress={() => tryToAuth({ user, password })}
+                                onPress={() => {
+                                    tryToAuth({ user, password })
+                                    if (route.params?.calledFromPayment) {
+                                        rootNavigation.navigate("CartOrder")
+                                        setTimeout(() => {
+                                            rootNavigation.navigate("Payment")
+                                        }, 200)
+                                    }
+                                }}
                             >
                                 INICIAR SESIÓN
                             </Button>

@@ -20,10 +20,10 @@ export type RootStackParamList = {
 export type UserStackParamList = {
 	User: undefined;
 	UserEditor: undefined;
-	SignIn: undefined;
+	SignIn?: { calledFromPayment: boolean };
 	SignUp: undefined
 };
 
 export type RootNavProps = NativeStackNavigationProp<RootStackParamList, 'BottomNav'>
 export type UserNavProps = NativeStackNavigationProp<UserStackParamList, 'User'>
-export type CartRouteProps = RouteProp<RootStackParamList, "CartOrder">
+export type SignInRouteProps = RouteProp<UserStackParamList, "SignIn">

@@ -6,7 +6,7 @@ import RemoteService from "../model/services/RemoteService"
 type BooksStoreType = {
     isLoading: boolean,
     books: StockBook[],
-    queryBooks: () => void,
+    queryBooks: () => void
 }
 
 const useBooks = create<BooksStoreType>()((set) => ({
