@@ -1,87 +1,107 @@
-import { Icon, Text, useTheme } from "@ui-kitten/components";
-import { KeyboardAvoidingView, View } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { Button, Card, Icon, Text, useTheme } from "@ui-kitten/components";
+import { StyleSheet, View } from "react-native";
 import useAuth from "../../hooks/useAuth";
-import useKeyboard from "../../hooks/useKeyboard";
-import ActionButton from "../components/ActionButton";
-import FormInput from "../components/FormInput";
 import RoundButton from "../components/RoundButton";
-import { globalStyles as styles } from "../styles/styles";
+import { UserNavProps } from "../routes/types.nav";
 
-export default function User() {
-    const { client } = useAuth()
-    const [isKeyboardVisible] = useKeyboard()
-    const { logout } = useAuth()
+const styles = StyleSheet.create({
+    common: {
+        width: "100%",
+        justifyContent: "center",
+        textAlign: "center",
+    },
+    buttonLayout: { backgroundColor: "transparent", flexDirection: "row", justifyContent: "space-around", alignItems: "center" },
+    cardPropsRow: { backgroundColor: "transparent", flexDirection: "row", alignItems: "center", marginHorizontal: -15 },
+    cardKeys: {
+        width: "35%",
+        fontSize: 10,
+        textTransform: "uppercase",
+    },
+    cardValues: {
+        width: "65%",
+        height: 20,
+        fontSize: 15,
+    },
+});
+
+export default function ProfileScreen() {
+    const navigation = useNavigation<UserNavProps>()
     const theme = useTheme()
+    const { client, logout } = useAuth()
 
-    const topButtons = [
-        {
-            iconName: "person-add",
-            disabled: true,
-            backgroundColor: theme['color-warning-500']
-        },
-        {
-            iconName: "log-out",
-            disabled: false,
-            backgroundColor: theme['color-danger-600'],
-            onPress: logout
-        },
-    ]
-    const bottomButtons = [
-        {
-            iconName: "edit",
-            disabled: true,
-            backgroundColor: theme['color-warning-500']
-        },
-        {
-            iconName: "slash",
-            disabled: true,
-            backgroundColor: theme['color-warning-500']
-        },
-        {
-            iconName: "trash-2",
-            disabled: true,
-            backgroundColor: theme['color-danger-500']
-        },
-        {
-            iconName: "save",
-            disabled: true,
-            backgroundColor: theme['color-success-500']
-        },
-    ]
-
-    return <View style={[styles.common, { flex: 1 }]}>
-        <View style={{ display: isKeyboardVisible ? 'none' : 'flex', flex: 1, width: '80%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-            {topButtons.map((button, index) => {
-                return <RoundButton key={`user-round-button-${index}`}
-                    disabled={button.disabled}
-                    size="small"
-                    icon={() => <Icon name={button.iconName} fill="black" height="40" width="40" />}
-                    backgroundColor={button.backgroundColor}
-                    onPress={button.onPress}
-                />
-            })}
-        </View>
-        <View>
-            <Icon name="person-outline" fill={theme['background-alternative-color-4']} height="100" width="100" />
-            <Text
-                style={{ fontSize: 30, fontFamily: "serif", fontStyle: "italic", textAlign: "center", textTransform: "uppercase" }}
-            >
-                {client.getUser()}
+    const cuenta = {
+        usuario: client.getUser(),
+        nombre: client.getName(),
+        email: client.getEmail(),
+        móvil: client.getMobile(),
+        clave: "********",
+    };
+    const cuentaChildren: JSX.Element[] = Object.entries(cuenta).map(([key, value], index) => (
+        <View key={`clientProp${index}`} style={styles.cardPropsRow}>
+            <Text style={styles.cardKeys}>{key}</Text>
+            <Text style={styles.cardValues} numberOfLines={1} ellipsizeMode="middle">
+                {value}
             </Text>
         </View>
-        <KeyboardAvoidingView style={{ flex: 2, width: '80%' }}>
-            <FormInput isTop disabled showSoftInputOnFocus={false} formColor={theme['background-basic-color-2']} title="Nombre" placeholder="Nombre" textStyle={{ textTransform: "capitalize" }} value={client.getName()} />
-            <FormInput disabled showSoftInputOnFocus={false} formColor={theme['background-basic-color-2']} inputMode="email" title="Email" placeholder="Email" value={client.getEmail()} />
-            <FormInput isBottom disabled showSoftInputOnFocus={false} formColor={theme['background-basic-color-2']} title="Móvil" placeholder="Móvil" value={client.getMobile()} />
-        </KeyboardAvoidingView>
-        <View style={{ display: isKeyboardVisible ? 'none' : 'flex', flex: 1, width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
-            {bottomButtons.map((button, index) => {
-                return <ActionButton key={`user-action-button-${index}`}
-                    disabled={button.disabled}
-                    icon={() => <Icon name={button.iconName} fill="white" height="30" width="30" />}
-                    backgroundColor={button.backgroundColor}
-                />
-            })}
+    ));
+
+    const facturacion = {
+        Destinatario: client.getBillingInfo()?.getToWhom(),
+        CI: client.getBillingInfo()?.getCi(),
+        Provincia: client.getBillingInfo()?.getProvincia(),
+        Ciudad: client.getBillingInfo()?.getCiudad(),
+        "Número de casa": client.getBillingInfo()?.getNumCasa(),
+        Calles: client.getBillingInfo()?.getCalles(),
+    };
+    const facturacionChildren: JSX.Element[] = Object.entries(facturacion).map(([key, value], index) => (
+        <View key={`billingInfoProp${index}`} style={styles.cardPropsRow}>
+            <Text style={styles.cardKeys}>{key}</Text>
+            <Text style={styles.cardValues} numberOfLines={1} ellipsizeMode="middle">
+                {value}
+            </Text>
         </View>
-    </View>
-}
+    ));
+
+    const PersonIcon = () => <Icon name="person-outline" fill="#C6C6C6" height="50" width="50" />
+    const CardIcon = () => <Icon name="credit-card" fill="white" height="50" width="50" />;
+    const BagIcon = () => <Icon name="shopping-bag" fill="white" height="50" width="50" />;
+    const CardHeader = (props: { title: string }) => (
+        <Text style={{ backgroundColor: "black", color: "white", padding: 2, paddingLeft: 20 }}>{props.title}</Text>
+    );
+    const ButtonIcon = () => <Icon name="log-out" fill="white" height="20" width="20" rotation={180} />;
+
+    return (
+        <View style={{ flex: 1, justifyContent: "space-evenly", alignItems: "center", paddingTop: 10 }}>
+            <View style={{ alignItems: "center" }}>
+                <Text style={{ fontSize: 20, fontFamily: "serif", fontStyle: "italic", textAlign: "center", textTransform: "uppercase" }}>
+                    {cuenta.usuario}
+                </Text>
+            </View>
+            <View style={[styles.common, styles.buttonLayout]}>
+                <Button size="tiny" status="warning" accessoryLeft={CardIcon} style={{ borderRadius: 100 }} />
+                <RoundButton size="small" backgroundColor="black" icon={PersonIcon} onPress={() => navigation.navigate("UserEditor")} />
+                <Button size="tiny" status="success" accessoryLeft={BagIcon} style={{ borderRadius: 100 }} />
+            </View>
+            <Card key="client" header={<CardHeader title="Cuenta" />} style={{ width: "80%", borderRadius: 20 }}>
+                {cuentaChildren}
+            </Card>
+            <Card key="billingInfo" header={<CardHeader title="Facturación" />} style={{ width: "80%", borderRadius: 20 }}>
+                {facturacionChildren}
+            </Card>
+            <View style={[styles.common, { alignItems: "center" }]}>
+                <Button
+                    style={{ width: "70%" }}
+                    size="medium"
+                    status="danger"
+                    accessoryRight={ButtonIcon}
+                    onPress={() => {
+                        logout()
+                    }}
+                >
+                    Cerrar Sesión
+                </Button>
+            </View>
+        </View>
+    );
+};

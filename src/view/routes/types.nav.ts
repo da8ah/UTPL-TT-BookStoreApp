@@ -19,6 +19,7 @@ export type RootStackParamList = {
 };
 export type UserStackParamList = {
 	User: undefined;
+	UserEditor: undefined;
 	SignIn: undefined;
 	SignUp: undefined
 };
