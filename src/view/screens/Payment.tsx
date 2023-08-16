@@ -1,32 +1,22 @@
 import { useNavigation } from "@react-navigation/native";
-// import { BillingDetails, CardField, StripeProvider, useConfirmPayment } from "@stripe/stripe-react-native";
-// import { Details } from "@stripe/stripe-react-native/lib/typescript/src/types/components/CardFieldInput";
-import { Button, Icon, Layout, Modal, Text } from "@ui-kitten/components";
+import { CardField, StripeProvider, useConfirmPayment } from "@stripe/stripe-react-native";
+import { Details } from "@stripe/stripe-react-native/lib/typescript/src/types/components/CardFieldInput";
+import { Button, Icon, Modal, Text } from "@ui-kitten/components";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, KeyboardAvoidingView, StyleSheet } from "react-native";
+import { KeyboardAvoidingView, StyleSheet, View } from "react-native";
+import useAuth from "../../hooks/useAuth";
 import useCart from "../../hooks/useCart";
-import Cart from "../../model/core/entities/Cart";
-import ToBuyBook from "../../model/core/entities/ToBuyBook";
-import { RootStackParamList } from "../routes/types.nav";
+import Card from "../../model/core/entities/Card";
+import LoadingAlert from "../components/LoadingAlert";
+import { RootNavProps } from "../routes/types.nav";
+import CartStatus from "./layouts/CartStatus";
 
 const styles = StyleSheet.create({
     common: {
-        width: "100%",
-        justifyContent: "space-evenly",
-        alignItems: "center",
-        textAlign: "center",
+        width: "100%"
     },
     container: { flex: 1 },
-    header: {
-        backgroundColor: "black",
-        flex: 1,
-        paddingVertical: 20,
-        marginTop: 30,
-    },
-    cartStatus: { flex: 1, width: "100%", flexDirection: "row", justifyContent: "space-around", alignItems: "center" },
-    body: { flex: 4, width: "100%", justifyContent: "space-between" },
-    statusLayouts: { backgroundColor: "transparent", alignItems: "center", paddingVertical: 5 },
-    statusProperties: { textAlign: "center", fontSize: 12, fontWeight: "bold" },
+    body: { flex: 4, width: "100%", justifyContent: "space-between", paddingVertical: 5 },
     paymentCardField: {
         height: 100,
         paddingHorizontal: 2,
@@ -36,43 +26,39 @@ const styles = StyleSheet.create({
 });
 
 const Payment = () => {
-    const { togglePayment } = useCart()
+    const { client } = useAuth()
+    const { myCart, togglePayment, queryPublishableKey } = useCart()
+    const fecha = new Date().toLocaleDateString("ec")
 
     const [modalVisibility, setModalVisibility] = useState(false);
     const [modalChildren, setModalChildren] = useState<JSX.Element>();
 
-    const [publishableKey, setPublishableKey] = useState<string | null>(null);
+    const [publishableKey, setPublishableKey] = useState<string>();
 
-    // const tryToGetKey = async () => {
-    //     await cartViMo.queryPublishableKey();
-    //     setPublishableKey(cartViMo.getSPK());
-    // };
-
-    useEffect(() => { }, [publishableKey]);
+    const tryToGetKey = async () => {
+        setPublishableKey(await queryPublishableKey(client.getUser()))
+    }
 
     useEffect(() => {
         togglePayment()
-        // tryToGetKey();
+        tryToGetKey()
         return () => togglePayment()
-    }, []);
+    }, [])
 
     return (
-        <Layout style={[styles.common, styles.container]}>
-            <OrderHeader />
+        <View style={[styles.common, styles.container]}>
+            <CartStatus fecha={fecha} subtotal={myCart.getSubtotal()} ivaCalc={myCart.getIvaCalc()} discountCalc={myCart.getDiscountCalc()} total={myCart.getTotalPrice()} />
             {!publishableKey ? (
-                <Layout style={[styles.common, { flex: 8 }]}>
-                    <ActivityIndicator />
-                </Layout>
+                <LoadingAlert />
             ) : (
                 <>
-                    {/* <StripeProvider key={"stripe"} publishableKey={publishableKey}> */}
-                    <OrderStatus />
-                    <OrderFooter setModalVisibility={setModalVisibility} setModalChildren={setModalChildren} />
-                    {/* </StripeProvider> */}
+                    <StripeProvider key={"stripe"} publishableKey={publishableKey}>
+                        <OrderFooter setModalVisibility={setModalVisibility} setModalChildren={setModalChildren} />
+                    </StripeProvider>
                 </>
             )}
             <Modal visible={modalVisibility} style={{ width: "70%" }} backdropStyle={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }} children={modalChildren} />
-        </Layout>
+        </View>
     );
 };
 
@@ -128,12 +114,12 @@ const ModalSaveConfirmation = (props: {
     }
 
     return (
-        <Layout style={{ alignItems: "center", padding: 20, borderRadius: 20 }}>
-            <Layout style={{ width: "100%", alignItems: "center", marginTop: 10 }}>
+        <View style={{ alignItems: "center", padding: 20, borderRadius: 20 }}>
+            <View style={{ width: "100%", alignItems: "center", marginTop: 10 }}>
                 <Text style={{ textTransform: "uppercase" }}>{title}</Text>
                 {icon}
                 <Text style={{ fontSize: 12, marginVertical: 5 }}>{message}</Text>
-            </Layout>
+            </View>
             <Button
                 size="small"
                 status={buttonStatus}
@@ -145,114 +131,50 @@ const ModalSaveConfirmation = (props: {
             >
                 Ok
             </Button>
-        </Layout>
-    );
-};
-
-const OrderHeader = () => {
-    // rome-ignore lint/suspicious/noExplicitAny: <explanation>
-    const navigation: any = useNavigation<RootStackParamList>();
-
-    const GoBackIcon = () => <Icon name="arrow-circle-left-outline" fill="white" height="30" width="30" />;
-    const BagIcon = () => <Icon name="shopping-bag-outline" fill="dimgrey" height="25" width="25" />;
-    return (
-        <Layout style={[styles.common, styles.header]}>
-            <Text category="h1" status="success" style={{ fontStyle: "italic" }}>
-                BOOKSTORE
-            </Text>
-            <Layout style={{ backgroundColor: "transparent", width: "100%", flexDirection: "row", justifyContent: "space-around", alignItems: "center" }}>
-                <Button
-                    size="small"
-                    status="success"
-                    accessoryLeft={GoBackIcon}
-                    style={{ borderRadius: 100 }}
-                    onPress={() => {
-                        navigation.goBack();
-                    }}
-                />
-                <Text category='h5' style={{ color: "white", textTransform: "uppercase" }}>
-                    Su Pedido
-                </Text>
-                <Button size="tiny" status="basic" accessoryLeft={BagIcon} style={{ height: 40, width: 40, borderRadius: 100 }} />
-            </Layout>
-        </Layout>
-    );
-};
-
-const OrderStatus = () => {
-    const cart = new Cart([new ToBuyBook('', '', '', '', '', 10, false, 0, false, 1)])//cartViMo.getCart();
-    const descuento = cart?.getDiscountCalc() || 0;
-    const iva = cart?.getIvaCalc() || 0;
-    const subtotal = cart?.getSubtotal() || 0;
-    const total = cart?.getTotalPrice() || 0;
-    const fecha = new Date().toLocaleDateString("ec");
-
-    return (
-        <Layout style={styles.cartStatus}>
-            <Layout style={[styles.statusLayouts, { width: "20%" }]}>
-                <Text style={{ fontWeight: "bold" }}>Fecha</Text>
-                <Text>{fecha}</Text>
-            </Layout>
-            <Layout style={[styles.statusLayouts]}>
-                <Text style={[styles.statusProperties]}>Subtotal</Text>
-                <Text style={[styles.statusProperties, { fontSize: 13 }]}>{subtotal.toFixed(2)}</Text>
-            </Layout>
-            <Layout style={[styles.statusLayouts]}>
-                <Text style={[styles.statusProperties]}>IVA</Text>
-                <Text style={[styles.statusProperties, { color: "darkred" }]}>+{iva.toFixed(2)}</Text>
-            </Layout>
-            <Layout style={[styles.statusLayouts]}>
-                <Text style={[styles.statusProperties]}>Descuento</Text>
-                <Text style={[styles.statusProperties, { color: "darkgreen" }]}>-{descuento.toFixed(2)}</Text>
-            </Layout>
-            <Layout style={[styles.statusLayouts, { backgroundColor: "orange", width: "25%", borderTopLeftRadius: 10, borderBottomLeftRadius: 10 }]}>
-                <Text style={[styles.statusProperties, { width: "100%", fontSize: 18 }]}>TOTAL</Text>
-                <Text style={[styles.statusProperties, { width: "100%", fontSize: 18 }]}>$ {total.toFixed(2)}</Text>
-            </Layout>
-        </Layout>
+        </View>
     );
 };
 
 const OrderFooter = (props: { setModalVisibility: (visibility: boolean) => void; setModalChildren: (children: JSX.Element) => void }) => {
-    // rome-ignore lint/suspicious/noExplicitAny: <explanation>
-    const navigation: any = useNavigation<RootStackParamList>();
+    const navigation = useNavigation<RootNavProps>()
+    const { client } = useAuth()
+    const { transactionResult, sendPaymentToServer, sendTransactionToServer } = useCart()
+    const { confirmPayment } = useConfirmPayment()
 
     const [isPress, setPressState] = useState(false);
     const [confirmDisabled, setConfirmDisabledState] = useState<boolean>(true);
-    // const { confirmPayment } = useConfirmPayment();
 
-    // const validateCardInputs = (cardDetails: Details) => {
-    //     const postalCode = cardDetails.postalCode;
-    //     const postalCodeRegEx: RegExp = /^\d{6}$/;
-    //     if (postalCode) return postalCodeRegEx.test(postalCode);
-    //     else return false;
-    // };
+    const validateCardInputs = (cardDetails: Details) => {
+        const postalCode = cardDetails.postalCode;
+        const postalCodeRegEx: RegExp = /^\d{6}$/;
+        if (postalCode) return postalCodeRegEx.test(postalCode);
+        else return false;
+    }
 
     const UnlockIcon = () => <Icon name="unlock" fill="white" height="30" width="30" />;
     const LockIcon = () => <Icon name="lock" fill="white" height="30" width="30" />;
     return (
         <KeyboardAvoidingView style={styles.body}>
-            {/* <CardField
+            <CardField
                 autofocus={true}
                 style={styles.paymentCardField}
                 onCardChange={(cardDetails) => {
                     const completed = cardDetails.complete;
                     if (completed && validateCardInputs(cardDetails)) {
-                        setConfirmDisabledState(false);
-                        clientViMo
-                            .getClient()
+                        setConfirmDisabledState(false)
+                        client
                             .setCards([
                                 new Card(
-                                    clientViMo.getClient().getName(),
+                                    client.getName(),
                                     cardDetails.last4,
-                                    undefined,
+                                    cardDetails.cvc || '',
                                     `${cardDetails.expiryMonth}/${cardDetails.expiryYear - 2000}`,
                                 ),
                             ]);
-                    } else setConfirmDisabledState(true);
+                    } else setConfirmDisabledState(true)
                 }}
-            /> */}
-            <Layout style={{ alignItems: "center" }}>
+            />
+            <View style={{ alignItems: "center" }}>
                 <Button
                     disabled={confirmDisabled}
                     style={{ width: "90%" }}
@@ -263,13 +185,13 @@ const OrderFooter = (props: { setModalVisibility: (visibility: boolean) => void;
                         if (!confirmDisabled) setPressState(false);
                     }}
                     onLongPress={async () => {
-                        setConfirmDisabledState(true);
-                        // const resultado = await cartViMo.sendPaymentToServer();
+                        // setConfirmDisabledState(true);
+                        // const resultado = await sendPaymentToServer()
                         // if (resultado?.clientSecret) {
                         //     const billingDetails: BillingDetails = {
-                        //         name: clientViMo.getClient().getName(),
-                        //         email: clientViMo.getClient().getEmail(),
-                        //         phone: clientViMo.getClient().getMobile(),
+                        //         name: client.getName(),
+                        //         email: client.getEmail(),
+                        //         phone: client.getMobile(),
                         //     };
                         //     const { error, paymentIntent } = await confirmPayment(resultado.clientSecret, {
                         //         paymentMethodType: "Card",
@@ -279,7 +201,7 @@ const OrderFooter = (props: { setModalVisibility: (visibility: boolean) => void;
                         //     });
                         //     if (error) resultado.codeStatus = "4001";
                         //     if (paymentIntent) {
-                        //         resultado.codeStatus = (await cartViMo.sendTransactionToServer()) || "4002";
+                        //         resultado.codeStatus = (await sendTransactionToServer()) || "4002";
                         //     }
                         // }
                         // props.setModalChildren(
@@ -289,12 +211,12 @@ const OrderFooter = (props: { setModalVisibility: (visibility: boolean) => void;
                         //         setModalVisibility={props.setModalVisibility}
                         //     />,
                         // );
-                        // props.setModalVisibility(true);
+                        // props.setModalVisibility(true)
                     }}
                 >
                     CONFIRM PAYMENT
                 </Button>
-            </Layout>
+            </View>
         </KeyboardAvoidingView>
     );
 };

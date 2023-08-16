@@ -16,13 +16,16 @@ export default class RemoteService implements IPersistenciaClient, IPersistencia
     private base = 'https://utpl-tt-bookstore.azurewebsites.net'
     private api = `${this.base}/api`
     private apiBooks = `${this.api}/books`
-    private apiClient = `${this.api}/clients/${this.username}`
-    private apiTransactions = `${this.apiClient}/transactions`
+    private apiClient: string
+    private apiTransactions: string
 
-    constructor(token: string = '', username = '') {
+    constructor(token: string = '', username: string = '') {
         this.token = token
         this.username = username
+        this.apiClient = `${this.api}/clients/${this.username}`
+        this.apiTransactions = `${this.apiClient}/transactions`
     }
+
     actualizarBillingInfo(client: Client, billingInfo: BillingInfo): Promise<boolean> {
         throw new Error("Method not implemented.");
     }
@@ -34,13 +37,6 @@ export default class RemoteService implements IPersistenciaClient, IPersistencia
     }
     agregarTransaction(client: Client, transaction: Transaction): Promise<boolean> {
         throw new Error("Method not implemented.");
-    }
-
-    setToken(token: string) {
-        this.token = token
-    }
-    setUsername(username: string) {
-        this.username = username
     }
 
     // USER

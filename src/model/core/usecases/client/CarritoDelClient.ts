@@ -2,10 +2,9 @@ import Cart from "../../entities/Cart";
 import ToBuyBook from "../../entities/ToBuyBook";
 import IPago from "../../ports/IPago";
 import IPersistenciaCarrito from "../../ports/persistencia/IPersistenciaCarrito";
-import IPersistenciaLibro from "../../ports/persistencia/IPersistenciaLibro";
 
 export default class GestionDelCarrito {
-	public static async pagarCarritoEnCaja(iPersistenciaLibro: IPersistenciaLibro, iPago: IPago, cart: Cart): Promise<any> {
+	public static async pagarCarritoEnCaja(iPago: IPago, cart: Cart): Promise<any> {
 		throw ("Not implemented!")
 	}
 
