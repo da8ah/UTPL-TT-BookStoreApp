@@ -1,4 +1,5 @@
+import ToBuyBook from "../entities/ToBuyBook";
+
 export default interface IPago {
-	// rome-ignore lint/suspicious/noExplicitAny: <explanation>
-	procesarPago(amount: number): Promise<any>;
+	procesarPago(toBuyBooks: ToBuyBook[]): Promise<{ codeStatus: string, clientSecret?: string } | undefined>;
 }

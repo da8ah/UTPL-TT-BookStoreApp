@@ -1,13 +1,12 @@
 import { Button, Icon, Text, useTheme } from "@ui-kitten/components";
 import { memo, useState } from "react";
-import { Image, ListRenderItemInfo, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { Image, Keyboard, ListRenderItemInfo, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import useBooks from "../../../hooks/useBooks";
 import useCart from "../../../hooks/useCart";
 import StockBook from "../../../model/core/entities/StockBook";
 import ObjectCloner from "../../../utils/cloner";
 import ModalDisplay from "../../components/ModalDisplay";
 import ModalCant from "./ModalCant";
-import { Keyboard } from "react-native";
 
 const CardTop = (props: { price: number; isInOffer: boolean; discountPercentage: number }) => (
     <View style={[styles.common, styles.cardTop]}>

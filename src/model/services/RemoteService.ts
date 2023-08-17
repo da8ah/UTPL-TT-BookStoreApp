@@ -12,7 +12,7 @@ import IPersistenciaTransacciones from "../core/ports/persistencia/IPersistencia
 export default class RemoteService implements IPersistenciaClient, IPersistenciaLibro, IPersistenciaTransacciones {
 
     private token: string
-    private username: string = ''
+    private username: string
     private base = 'https://utpl-tt-bookstore.azurewebsites.net'
     private api = `${this.base}/api`
     private apiBooks = `${this.api}/books`
@@ -65,7 +65,7 @@ export default class RemoteService implements IPersistenciaClient, IPersistencia
 
     async iniciarSesionConToken(): Promise<Client | undefined> {
         try {
-            if (this.token === '') throw Error('Token was not provided, must signin!')
+            if (this.token === '' || this.username === '') throw Error('Unauthorized, must signin!')
 
             let user
             const httpContent = {
@@ -79,7 +79,7 @@ export default class RemoteService implements IPersistenciaClient, IPersistencia
                 .then((body) => (user = ClientConverter.jsonToClient(body)));
             return user
         } catch (error) {
-            console.log(error);
+            console.log(error)
             return
         }
     }
@@ -97,7 +97,7 @@ export default class RemoteService implements IPersistenciaClient, IPersistencia
                 .then((body) => body.map((item: StockBook) => BookConverter.jsonToBook(item)));
             return data;
         } catch (error) {
-            console.error(error);
+            console.error(error)
             return [];
         }
     }
@@ -105,7 +105,7 @@ export default class RemoteService implements IPersistenciaClient, IPersistencia
     // TRANSACTIONS
     async obtenerTransaccionesDeClient(): Promise<CardTransaction[]> {
         try {
-            if (this.token === '') throw Error('Token was not provided, must signin!')
+            if (this.token === '' || this.username === '') throw Error('Unauthorized, must signin!')
 
             const httpContent = {
                 method: "GET",
@@ -119,11 +119,30 @@ export default class RemoteService implements IPersistenciaClient, IPersistencia
 
             return data;
         } catch (error) {
-            console.error(error);
+            console.error(error)
             return [];
         }
     }
-    async guardarTransaccionDeClient(transaction: Transaction): Promise<boolean> {
-        throw new Error("Method not implemented.");
+    async guardarTransaccionDeClient(transaction: Transaction): Promise<CardTransaction[]> {
+        try {
+            if (this.token === '' || this.username === '') throw Error('Unauthorized, must signin!')
+
+            const httpContent = {
+                method: "POST",
+                headers: {
+                    Authorization: this.token,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(transaction)
+            };
+            let data: CardTransaction[] = await fetch(`${this.apiTransactions}`, httpContent)
+                .then((res) => res.json())
+                .then((body) => body.map((item: CardTransaction) => TransactionConverter.jsonToCardTransaction(item)));
+
+            return data
+        } catch (error) {
+            console.error(error)
+            return []
+        }
     }
 }

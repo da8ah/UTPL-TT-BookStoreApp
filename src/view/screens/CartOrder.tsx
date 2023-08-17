@@ -11,9 +11,9 @@ import CartStatus from "./layouts/CartStatus";
 export default function CartOrder() {
     const navigation = useNavigation<RootNavProps>()
     const theme = useTheme()
-    const { isAuth } = useAuth()
+    const { isAuth, client } = useAuth()
 
-    const { myCart, toggleCart } = useCart()
+    const { myCart, toggleCart, setUserToCart } = useCart()
     const fecha = new Date().toLocaleDateString("ec")
 
     useEffect(() => {
@@ -25,8 +25,8 @@ export default function CartOrder() {
     const ButtonIconRight = () => <Icon name="arrow-circle-right-outline" fill="white" height="25" width="25" />
     return <View style={{ flex: 1 }}>
         <View style={styles.cartHeader}>
-            <Text category="h3" style={{ color: "white", fontStyle: "italic" }}>
-                En mi Carrito
+            <Text category="h3" style={{ color: "white", fontSize: 20, fontStyle: "italic" }}>
+                {isAuth ? `Carrito de ${client.getUser().toUpperCase()}` : "En mi Carrito"}
             </Text>
         </View>
         <CartStatus fecha={fecha} subtotal={myCart.getSubtotal()} ivaCalc={myCart.getIvaCalc()} discountCalc={myCart.getDiscountCalc()} total={myCart.getTotalPrice()} />
@@ -48,7 +48,11 @@ export default function CartOrder() {
             accessoryLeft={ButtonIconLeft}
             accessoryRight={ButtonIconRight}
             onPress={() => {
-                if (myCart.getToBuyBooks().length > 0) isAuth ? navigation.navigate("Payment") : navigation.navigate("BottomNav", { screen: "UserNav", params: { screen: 'SignIn', params: { calledFromPayment: true } } });
+                if (myCart.getToBuyBooks().length > 0)
+                    if (isAuth) {
+                        setUserToCart(client.getUser())
+                        navigation.navigate("Payment")
+                    } else navigation.navigate("BottomNav", { screen: "UserNav", params: { screen: 'SignIn', params: { calledFromPayment: true } } });
             }}
         >
             Ir a CAJA

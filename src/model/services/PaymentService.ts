@@ -1,3 +1,4 @@
+import ToBuyBook from "../core/entities/ToBuyBook";
 import IPago from "../core/ports/IPago";
 
 export default class PaymentService implements IPago {
@@ -35,23 +36,9 @@ export default class PaymentService implements IPago {
         }
     }
 
-    async procesarPago(amount: number): Promise<any> {
+    async procesarPago(toBuyBooks: ToBuyBook[]): Promise<{ codeStatus: string, clientSecret?: string } | undefined> {
         try {
             if (this.token === '' || this.username === '') throw Error('Unauthorized, must signin!')
-
-            const price = amount.toString()
-            const checkPaymentFormat = (price: string): boolean => {
-                const priceRegEx: RegExp = /^[\d]+[.,]{1}[\d]{2}$/;
-                let priceTrim = price.trim();
-                return priceRegEx.test(priceTrim);
-            };
-            if (!checkPaymentFormat(price)) return { codeStatus: ":400", clientSecret: null };
-            const priceSplitted = price.split(/[.,]{1}/);
-            const priceWithStripeFormat = priceSplitted[0] + priceSplitted[1];
-            const bodyContent = JSON.stringify({
-                amount: `${priceWithStripeFormat}`,
-                paymentMethodType: "card",
-            })
 
             const httpContent = {
                 method: "POST",
@@ -59,13 +46,12 @@ export default class PaymentService implements IPago {
                     Authorization: this.token,
                     "Content-Type": "application/json",
                 },
-                body: bodyContent,
+                body: JSON.stringify(toBuyBooks)
             }
-            return fetch(this.apiURL, httpContent).then(async (res) => {
-                const clientSecret = await res.json().then((obj) => obj.clientSecret);
+            return await fetch(this.apiURL, httpContent).then(async (res) => {
+                const clientSecret = res.headers.get("set-cookie")?.split(";")[0].split("=")[1];
                 return { codeStatus: res.status.toString(), clientSecret }
             })
-
         } catch (error) {
             console.log(error)
             return

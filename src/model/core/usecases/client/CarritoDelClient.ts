@@ -4,8 +4,8 @@ import IPago from "../../ports/IPago";
 import IPersistenciaCarrito from "../../ports/persistencia/IPersistenciaCarrito";
 
 export default class GestionDelCarrito {
-	public static async pagarCarritoEnCaja(iPago: IPago, cart: Cart): Promise<any> {
-		throw ("Not implemented!")
+	public static async pagarCarritoEnCaja(iPago: IPago, toBuyBooks: ToBuyBook[]): Promise<{ codeStatus: string, clientSecret?: string } | undefined> {
+		return iPago.procesarPago(toBuyBooks)
 	}
 
 	public static guardarCarrito(iPersistenciaCarrito: IPersistenciaCarrito, cart: Cart): Promise<boolean> {
