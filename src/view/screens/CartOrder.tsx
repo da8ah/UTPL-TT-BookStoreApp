@@ -1,23 +1,27 @@
 import { useNavigation } from "@react-navigation/native";
 import { Button, Icon, List, Text, useTheme } from "@ui-kitten/components";
-import { useEffect } from "react";
-import { StyleSheet, View } from "react-native";
+import { useEffect, useState } from "react";
+import { Keyboard, StyleSheet, View } from "react-native";
 import useAuth from "../../hooks/useAuth";
 import useCart from "../../hooks/useCart";
+import ModalDisplay from "../components/ModalDisplay";
 import { RootNavProps } from "../routes/types.nav";
+import AlertModal from "./layouts/AlertModal";
 import CartItem from "./layouts/CartItem";
 import CartStatus from "./layouts/CartStatus";
 
 export default function CartOrder() {
     const navigation = useNavigation<RootNavProps>()
     const theme = useTheme()
-    const { isAuth, client } = useAuth()
+    const { isAuth, isBioSupported, isBioAuth, checkBioSupport, requestFingerprint, client } = useAuth()
+    const [modalVisibility, setModalVisibility] = useState(false)
 
     const { myCart, toggleCart, setUserToCart } = useCart()
     const fecha = new Date().toLocaleDateString("ec")
 
     useEffect(() => {
         toggleCart()
+        checkBioSupport()
         return () => toggleCart()
     }, []);
 
@@ -47,16 +51,30 @@ export default function CartOrder() {
             style={styles.button}
             accessoryLeft={ButtonIconLeft}
             accessoryRight={ButtonIconRight}
-            onPress={() => {
-                if (myCart.getToBuyBooks().length > 0)
+            onPress={async () => {
+                if (!isBioSupported) { setModalVisibility(true); return }
+                if (myCart.getToBuyBooks().length <= 0) return
+
+                if (isBioAuth || await requestFingerprint()) {
                     if (isAuth) {
                         setUserToCart(client.getUser())
                         navigation.navigate("Payment")
-                    } else navigation.navigate("BottomNav", { screen: "UserNav", params: { screen: 'SignIn', params: { calledFromPayment: true } } });
+                    } else navigation.navigate("BottomNav", { screen: "UserNav", params: { screen: 'SignIn', params: { calledFromPayment: true } } })
+                }
             }}
         >
             Ir a CAJA
         </Button>
+        <ModalDisplay
+            visible={modalVisibility}
+            onBackdropPress={() => { if (Keyboard.isVisible()) Keyboard.dismiss(); setModalVisibility(false) }}
+        >
+            <AlertModal
+                modalType="failed"
+                data={{ title: "Huella Dactilar REQUERIDA", message: "No es posible realizar PAGOS" }}
+                onButtonPress={() => setModalVisibility(false)}
+            />
+        </ModalDisplay>
     </View>
 }
 
