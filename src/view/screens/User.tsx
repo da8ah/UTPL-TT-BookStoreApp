@@ -1,5 +1,5 @@
 import { useNavigation } from "@react-navigation/native";
-import { Button, Card, Icon, Text, useTheme } from "@ui-kitten/components";
+import { Button, Card, Icon, Text } from "@ui-kitten/components";
 import { StyleSheet, View } from "react-native";
 import useAuth from "../../hooks/useAuth";
 import RoundButton from "../components/RoundButton";
@@ -27,7 +27,6 @@ const styles = StyleSheet.create({
 
 export default function ProfileScreen() {
     const navigation = useNavigation<UserNavProps>()
-    const theme = useTheme()
     const { client, logout } = useAuth()
 
     const cuenta = {
@@ -35,8 +34,8 @@ export default function ProfileScreen() {
         nombre: client.getName(),
         email: client.getEmail(),
         móvil: client.getMobile(),
-        clave: "********",
-    };
+        clave: "********"
+    }
     const cuentaChildren: JSX.Element[] = Object.entries(cuenta).map(([key, value], index) => (
         <View key={`clientProp${index}`} style={styles.cardPropsRow}>
             <Text style={styles.cardKeys}>{key}</Text>
@@ -44,7 +43,7 @@ export default function ProfileScreen() {
                 {value}
             </Text>
         </View>
-    ));
+    ))
 
     const facturacion = {
         Destinatario: client.getBillingInfo()?.getToWhom(),
@@ -52,8 +51,8 @@ export default function ProfileScreen() {
         Provincia: client.getBillingInfo()?.getProvincia(),
         Ciudad: client.getBillingInfo()?.getCiudad(),
         "Número de casa": client.getBillingInfo()?.getNumCasa(),
-        Calles: client.getBillingInfo()?.getCalles(),
-    };
+        Calles: client.getBillingInfo()?.getCalles()
+    }
     const facturacionChildren: JSX.Element[] = Object.entries(facturacion).map(([key, value], index) => (
         <View key={`billingInfoProp${index}`} style={styles.cardPropsRow}>
             <Text style={styles.cardKeys}>{key}</Text>
@@ -61,14 +60,14 @@ export default function ProfileScreen() {
                 {value}
             </Text>
         </View>
-    ));
+    ))
 
     const PersonIcon = () => <Icon name="person-outline" fill="#C6C6C6" height="50" width="50" />
-    const CardIcon = () => <Icon name="credit-card" fill="white" height="50" width="50" />;
-    const BagIcon = () => <Icon name="shopping-bag" fill="white" height="50" width="50" />;
+    const CardIcon = () => <Icon name="credit-card" fill="white" height="50" width="50" />
+    const BagIcon = () => <Icon name="shopping-bag" fill="white" height="50" width="50" />
     const CardHeader = (props: { title: string }) => (
         <Text style={{ backgroundColor: "black", color: "white", padding: 2, paddingLeft: 20 }}>{props.title}</Text>
-    );
+    )
     const ButtonIcon = () => <Icon name="log-out" fill="white" height="20" width="20" rotation={180} />;
 
     return (
@@ -103,5 +102,5 @@ export default function ProfileScreen() {
                 </Button>
             </View>
         </View>
-    );
-};
+    )
+}

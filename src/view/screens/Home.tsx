@@ -1,5 +1,5 @@
 import { useTheme } from "@ui-kitten/components";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ActivityIndicator, ScrollView } from "react-native";
 import useBooks from "../../hooks/useBooks";
 import StockBook from "../../model/core/entities/StockBook";
@@ -14,44 +14,49 @@ export default function Home() {
     const [recommended, setRecommended] = useState<StockBook[]>([]);
     const [recent, setRecent] = useState<StockBook[]>([]);
     const [inOffer, setInOffer] = useState<StockBook[]>([]);
-    const [refreshing, setRefreshing] = useState(false);
 
-    useEffect(() => {
-        setRefreshing(true)
-        setTimeout(async () => {
-            displayDataRetrieved()
-            setRefreshing(false)
-        }, 2000)
-    }, [])
+    useEffect(() => { displayDataRetrieved() }, [])
 
-    useEffect(() => { }, [isLoading, books, bestSeller, recommended, recent, inOffer])
+    const inOfferFiltered = useMemo(() =>
+        books.filter((book) => {
+            if (book.isInOffer()) return book
+        }), [])
+    const bestSellerFiltered = useMemo(() =>
+        books.filter((book) => {
+            if (book.isBestSeller()) return book
+        }), [])
+    const recommendedFiltered = useMemo(() =>
+        books.filter((book) => {
+            if (book.isRecommended()) return book
+        }), [])
+    const recentFiltered = useMemo(() =>
+        books.filter((book) => {
+            if (book.isRecent()) return book
+        }), [])
 
     const displayDataRetrieved = () => {
         queryBooks()
-        const inOffer = books.filter((book) => {
-            if (book.isInOffer()) return book;
-        });
-        const bestSeller = books.filter((book) => {
-            if (book.isBestSeller()) return book;
-        });
-        const recommended = books.filter((book) => {
-            if (book.isRecommended()) return book;
-        });
-        const recent = books.filter((book) => {
-            if (book.isRecent()) return book;
-        });
-
-        setInOffer(inOffer || [new StockBook('', '', '', '', '', '', '', 0)])
-        setBestSeller(bestSeller || [new StockBook('', '', '', '', '', '', '', 0)])
-        setRecommended(recommended || [new StockBook('', '', '', '', '', '', '', 0)])
-        setRecent(recent || [new StockBook('', '', '', '', '', '', '', 0)])
+        setInOffer(inOfferFiltered)
+        setBestSeller(bestSellerFiltered)
+        setRecommended(recommendedFiltered)
+        setRecent(recentFiltered)
     }
 
-    return <ScrollView style={{ position: 'relative' }} contentContainerStyle={styles.common} onScrollEndDrag={(e) => { if (e.nativeEvent.contentOffset.y === 0) displayDataRetrieved() }}>
+    function debounce(callback: () => void, delay = 100) {
+        let timeout: any
+        return () => {
+            clearTimeout(timeout)
+            timeout = setTimeout(() => {
+                callback()
+            }, delay)
+        }
+    }
+
+    return <ScrollView style={{ position: 'relative' }} contentContainerStyle={styles.common} onScrollEndDrag={(e) => { if (e.nativeEvent.contentOffset.y === 0) debounce(displayDataRetrieved)() }}>
         {isLoading && <ActivityIndicator style={{ zIndex: 1, position: 'absolute', top: 10 }} color={theme['background-alternative-color-2']} />}
-        <Bookshelf identifier={"inOffer"} tag={"En Oferta"} books={inOffer} refreshing={refreshing} />
-        <Bookshelf identifier={"bestSeller"} tag={"Más Vendido"} books={bestSeller} refreshing={refreshing} />
-        <Bookshelf identifier={"recommended"} tag={"Recomendado"} books={recommended} refreshing={refreshing} />
-        <Bookshelf identifier={"recent"} tag={"Reciente"} books={recent} refreshing={refreshing} />
+        {inOffer.length > 0 && <Bookshelf identifier={"inOffer"} tag={"En Oferta"} books={inOffer} refreshing={false} />}
+        {bestSeller.length > 0 && <Bookshelf identifier={"bestSeller"} tag={"Más Vendido"} books={bestSeller} refreshing={false} />}
+        {recommended.length > 0 && <Bookshelf identifier={"recommended"} tag={"Recomendado"} books={recommended} refreshing={false} />}
+        {recent.length > 0 && <Bookshelf identifier={"recent"} tag={"Reciente"} books={recent} refreshing={false} />}
     </ScrollView >
 }

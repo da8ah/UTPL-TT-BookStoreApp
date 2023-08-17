@@ -16,7 +16,7 @@ export default function CartOrder() {
     const { isAuth, isBioSupported, isBioAuth, checkBioSupport, requestFingerprint, client } = useAuth()
     const [modalVisibility, setModalVisibility] = useState(false)
 
-    const { myCart, toggleCart, setUserToCart } = useCart()
+    const { myCart, toggleCart, setUserToCart, emptyCart } = useCart()
     const fecha = new Date().toLocaleDateString("ec")
 
     useEffect(() => {
@@ -25,6 +25,7 @@ export default function CartOrder() {
         return () => toggleCart()
     }, []);
 
+    const CleanIcon = () => <Icon name="trash-2" fill="white" height="25" width="25" />
     const ButtonIconLeft = () => <Icon name="shopping-cart" fill="white" height="25" width="25" />
     const ButtonIconRight = () => <Icon name="arrow-circle-right-outline" fill="white" height="25" width="25" />
     return <View style={{ flex: 1 }}>
@@ -32,6 +33,13 @@ export default function CartOrder() {
             <Text category="h3" style={{ color: "white", fontSize: 20, fontStyle: "italic" }}>
                 {isAuth ? `Carrito de ${client.getUser().toUpperCase()}` : "En mi Carrito"}
             </Text>
+            <Button
+                size="tiny"
+                status="danger"
+                activeOpacity={0.3}
+                accessoryLeft={CleanIcon}
+                onPress={emptyCart}
+            />
         </View>
         <CartStatus fecha={fecha} subtotal={myCart.getSubtotal()} ivaCalc={myCart.getIvaCalc()} discountCalc={myCart.getDiscountCalc()} total={myCart.getTotalPrice()} />
         <View style={styles.cartBooks}>

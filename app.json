@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "UTPL-TT-BookStoreApp",
+    "name": "BookStore (Demo)",
     "slug": "UTPL-TT-BookStoreApp",
-    "version": "0.0.0",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -21,11 +21,25 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "INTERNET",
+        "ACCESS_NETWORK_STATE",
+        "ACCESS_WIFI_STATE"
+      ],
+      "allowBackup": false,
+      "package": "com.daochoa6.bookstoreapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "jsEngine": "hermes"
+    "jsEngine": "hermes",
+    "extra": {
+      "eas": {
+        "projectId": "c72e722f-b064-4de8-aa41-fd67432a0f2e"
+      }
+    }
   }
 }

@@ -63,15 +63,15 @@ export default class RemoteService implements IPersistenciaClient, IPersistencia
         }
     }
 
-    async iniciarSesionConToken(): Promise<Client | undefined> {
+    async iniciarSesionConToken(token?: string): Promise<Client | undefined> {
         try {
-            if (this.token === '' || this.username === '') throw Error('Unauthorized, must signin!')
+            if (!token && this.token === '') throw Error('Unauthorized, must signin!')
 
             let user
             const httpContent = {
                 method: "GET",
                 headers: {
-                    Authorization: this.token,
+                    Authorization: token || this.token,
                 },
             };
             await fetch(`${this.api}/clients/signin`, httpContent)

@@ -1,5 +1,5 @@
 import { List, ListProps } from "@ui-kitten/components";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Keyboard, View } from "react-native";
 import useBooks from "../../hooks/useBooks";
 import StockBook from "../../model/core/entities/StockBook";
@@ -9,7 +9,6 @@ import BookCard from "./layouts/BookCard";
 
 const BookStoreList = (props: { books: StockBook[] } & Omit<ListProps, 'data' | 'renderItem'>) => {
     const books = props.books
-    useEffect(() => { }, [books]);
 
     return (
         <View style={{ flex: 1 }}>
@@ -34,8 +33,6 @@ export default function BookStore() {
     const { isLoading, books, queryBooks } = useBooks()
     const [query, setQuey] = useState('')
 
-    useEffect(() => { queryBooks() }, [])
-    useEffect(() => { }, [query])
     const data = useMemo(() => {
         return books.filter((book) => {
             return book.getAuthor().toLowerCase().includes(query.toLowerCase())

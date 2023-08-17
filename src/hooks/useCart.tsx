@@ -20,7 +20,8 @@ type CartStoreType = {
     addBookToCart: (toBuyBook: ToBuyBook, cant: number) => void,
     rmBookFromCart: (toBuyBook: ToBuyBook) => void,
     emptyCart: () => void,
-    queryPublishableKey: () => Promise<string | undefined>,
+    publishableKey: string,
+    queryPublishableKey: () => void,
     sendPaymentToServer: () => Promise<{} | undefined>,
     sendTransactionToServer: (client: Client) => Promise<boolean>
 }
@@ -42,9 +43,12 @@ const useCart = create<CartStoreType>()((set, get) => ({
         return { myCart: state.myCart }
     }),
     emptyCart: () => set({ myCart: new Cart([]) }),
+    publishableKey: '',
     queryPublishableKey: async () => {
+        if (get().publishableKey !== '') return
+
         const token = await new LocalService().obtenerTokenAlmacenado()
-        return new PaymentService(token, get().username).queryPaymentKey()
+        set({ publishableKey: await new PaymentService(token, get().username).queryPaymentKey() || '' })
     },
     sendPaymentToServer: async () => {
         const token = await new LocalService().obtenerTokenAlmacenado()

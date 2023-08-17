@@ -1,12 +1,12 @@
 import { BottomTabBarProps, createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { BottomNavigation, BottomNavigationTab, Icon, Text, useTheme } from "@ui-kitten/components";
 import { Keyboard } from "react-native";
+import useKeyboard from "../../hooks/useKeyboard";
 import useThemeMode from "../../hooks/useThemeMode";
 import BookStore from "../screens/BookStore";
 import Home from "../screens/Home";
 import UserNav from "./UserNav";
 import { BottomTabParamList } from "./types.nav";
-import useKeyboard from "../../hooks/useKeyboard";
 
 const UiKittenBottomTabNav = ({ navigation, state }: BottomTabBarProps) => {
     const [isKeyboardVisible] = useKeyboard()

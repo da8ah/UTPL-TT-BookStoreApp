@@ -15,13 +15,6 @@ export default function UserEditor() {
     const { client } = useAuth()
     const theme = useTheme()
 
-    const topButtons = [
-        {
-            iconName: "arrow-back",
-            backgroundColor: theme['color-warning-500'],
-            onPress: () => navigation.navigate("User")
-        }
-    ]
     const bottomButtons = [
         {
             iconName: "edit",
@@ -47,14 +40,7 @@ export default function UserEditor() {
 
     return <View style={[styles.common, { flex: 1 }]}>
         <View style={{ display: isKeyboardVisible ? 'none' : 'flex', flex: 1, width: '80%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-            {topButtons.map((button, index) => {
-                return <RoundButton key={`user-round-button-${index}`}
-                    size="small"
-                    icon={() => <Icon name={button.iconName} fill="black" height="40" width="40" />}
-                    backgroundColor={button.backgroundColor}
-                    onPress={button.onPress}
-                />
-            })}
+            <RoundButton size="small" backgroundColor="black" icon={() => <Icon name="arrow-back" fill="white" height="30" width="30" />} onPress={() => navigation.navigate("User")} />
         </View>
         <View style={styles.common}>
             <Icon name="person-outline" fill={theme['background-alternative-color-4']} height="100" width="100" />

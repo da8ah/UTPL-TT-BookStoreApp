@@ -1,18 +1,15 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { useEffect } from "react";
 import useAuth from "../../hooks/useAuth";
 import SignIn from "../auth/SignIn";
 import SignUp from "../auth/SignUp";
 import User from "../screens/User";
-import { UserStackParamList } from "./types.nav";
 import UserEditor from "../screens/UserEditor";
+import { UserStackParamList } from "./types.nav";
 
 const Stack = createNativeStackNavigator<UserStackParamList>();
 
 export default function UserNav() {
-    const { isAuth, tryToAuth } = useAuth()
-
-    useEffect(() => { tryToAuth() }, [])
+    const { isAuth } = useAuth()
 
     return <Stack.Navigator initialRouteName={isAuth ? 'User' : 'SignIn'} screenOptions={{
         headerShown: false,

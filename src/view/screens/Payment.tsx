@@ -35,18 +35,12 @@ const styles = StyleSheet.create({
 });
 
 export default function Payment() {
-    const { myCart, togglePayment, queryPublishableKey } = useCart()
+    const { myCart, togglePayment, publishableKey, queryPublishableKey } = useCart()
     const fecha = new Date().toLocaleDateString("ec")
-
-    const [publishableKey, setPublishableKey] = useState<string>();
-
-    const tryToGetKey = async () => {
-        setPublishableKey(await queryPublishableKey())
-    }
 
     useEffect(() => {
         togglePayment()
-        tryToGetKey()
+        queryPublishableKey()
         return () => togglePayment()
     }, [])
 
@@ -59,13 +53,11 @@ export default function Payment() {
             </View>
             <CartStatus fecha={fecha} subtotal={myCart.getSubtotal()} ivaCalc={myCart.getIvaCalc()} discountCalc={myCart.getDiscountCalc()} total={myCart.getTotalPrice()} />
             {!publishableKey ? (
-                <LoadingAlert />
+                <LoadingAlert title="Generando Pago" />
             ) : (
-                <>
-                    <StripeProvider key={"stripe"} publishableKey={publishableKey}>
-                        <OrderFooter />
-                    </StripeProvider>
-                </>
+                <StripeProvider key={"stripe"} publishableKey={publishableKey}>
+                    <OrderFooter />
+                </StripeProvider>
             )}
         </View>
     );
@@ -161,27 +153,27 @@ const OrderFooter = () => {
     const LockIcon = () => <Icon name="lock" fill="white" height="30" width="30" />;
     return (
         <KeyboardAvoidingView style={styles.body}>
-            {isPaymentInProgress ? <LoadingAlert title="Procesando Pago" /> :
-                <CardField
-                    autofocus={true}
-                    style={styles.paymentCardField}
-                    onCardChange={(cardDetails) => {
-                        const completed = cardDetails.complete;
-                        if (completed && validateCardInputs(cardDetails)) {
-                            setConfirmDisabledState(false)
-                            if (client.getCards().length === 0) {
-                                client.setCards([
-                                    new Card(
-                                        client.getName(),
-                                        cardDetails.last4,
-                                        cardDetails.cvc || '',
-                                        `${cardDetails.expiryMonth}/${cardDetails.expiryYear - 2000}`
-                                    ),
-                                ])
-                            }
-                        } else setConfirmDisabledState(true)
-                    }}
-                />}
+            <CardField
+                autofocus={true}
+                style={styles.paymentCardField}
+                onCardChange={(cardDetails) => {
+                    const completed = cardDetails.complete;
+                    if (completed && validateCardInputs(cardDetails)) {
+                        setConfirmDisabledState(false)
+                        if (client.getCards().length === 0) {
+                            client.setCards([
+                                new Card(
+                                    client.getName(),
+                                    cardDetails.last4,
+                                    cardDetails.cvc || '',
+                                    `${cardDetails.expiryMonth}/${cardDetails.expiryYear - 2000}`
+                                ),
+                            ])
+                        }
+                    } else setConfirmDisabledState(true)
+                }}
+            />
+            {isPaymentInProgress && <LoadingAlert title="Procesando Pago" />}
             <View style={{ alignItems: "center" }}>
                 <Button
                     disabled={confirmDisabled}

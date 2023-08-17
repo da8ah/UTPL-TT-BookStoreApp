@@ -1,7 +1,6 @@
 import BillingInfo from "../../entities/BillingInfo";
 import Card from "../../entities/Card";
 import Client from "../../entities/Client";
-import Transaction from "../../entities/Transaction";
 import IPersistenciaCuenta from "./IPersistenciaCuenta";
 
 export default interface IPersistenciaClient extends IPersistenciaCuenta {
