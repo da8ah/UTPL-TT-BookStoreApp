@@ -77,7 +77,6 @@ const OrderFooter = () => {
 
     function getModalAlertProps(codeStatus: string): AlertModalProps {
         const volverAlCarrito = () => {
-            setPaymentInProgress(false)
             setModalVisibility(false)
             navigation.navigate("CartOrder")
         }
@@ -125,7 +124,6 @@ const OrderFooter = () => {
                 },
                 onButtonPress: () => {
                     emptyCart()
-                    setPaymentInProgress(false)
                     setModalVisibility(false)
                     navigation.navigate("BottomNav", { screen: "Home" })
                 }
@@ -208,6 +206,7 @@ const OrderFooter = () => {
                             setCodeStatus(await sendTransactionToServer(client) ? "200" : "4002")
                             updateClient()
                         }
+                        setPaymentInProgress(false)
                         setModalVisibility(true)
                     }}
                 >

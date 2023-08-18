@@ -6,7 +6,8 @@ import RemoteService from "../model/services/RemoteService"
 type BooksStoreType = {
     isLoading: boolean,
     books: StockBook[],
-    queryBooks: () => void
+    queryBooks: () => void,
+    startLoading: () => void
 }
 
 const useBooks = create<BooksStoreType>()((set) => ({
@@ -17,7 +18,8 @@ const useBooks = create<BooksStoreType>()((set) => ({
         const books = await GestionDeInicio.listarCatalogoDeLibrosVisibles(new RemoteService())
         if (books.length > 0) set(() => ({ books }))
         set(() => ({ isLoading: false }))
-    }
+    },
+    startLoading: () => set(() => ({ isLoading: true }))
 }))
 
 export default useBooks;
