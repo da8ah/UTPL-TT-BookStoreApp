@@ -1,3 +1,4 @@
+import { InputValidator } from "../../../utils/validations";
 import Client from "../entities/Client";
 import StockBook from "../entities/StockBook";
 import IPersistenciaCuenta, { IPersistenciaCuentaLocal } from "../ports/persistencia/IPersistenciaCuenta";
@@ -18,6 +19,10 @@ export default class GestionDeInicio {
 	public static async iniciarSesionConToken(iPersistenciaCuenta: IPersistenciaCuenta, iPersistenciaCuentaLocal: IPersistenciaCuentaLocal): Promise<Client | undefined> {
 		const token = await iPersistenciaCuentaLocal.obtenerTokenAlmacenado()
 		return await iPersistenciaCuenta.iniciarSesionConToken(token)
+	}
+	public static async crearCuenta(iPersistenciaCuenta: IPersistenciaCuenta, client: Client): Promise<string> {
+		if (!(InputValidator.validateUser(client) || InputValidator.validateBillingInfo(client.getBillingInfo()))) return ':400'
+		return iPersistenciaCuenta.crearNevaCuenta(client)
 	}
 
 	public static async cerrarSesion(iPersistenciaCuentaLocal: IPersistenciaCuentaLocal): Promise<boolean> {

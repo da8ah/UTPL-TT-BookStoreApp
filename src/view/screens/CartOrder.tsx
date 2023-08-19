@@ -4,16 +4,18 @@ import { useEffect, useState } from "react";
 import { Keyboard, StyleSheet, View } from "react-native";
 import useAuth from "../../hooks/useAuth";
 import useCart from "../../hooks/useCart";
+import useClient from "../../hooks/useClient";
 import ModalDisplay from "../components/ModalDisplay";
 import { RootNavProps } from "../routes/types.nav";
-import AlertModal from "./layouts/AlertModal";
 import CartItem from "./layouts/CartItem";
 import CartStatus from "./layouts/CartStatus";
+import ModalAlert from "./layouts/ModalAlert";
 
 export default function CartOrder() {
     const navigation = useNavigation<RootNavProps>()
     const theme = useTheme()
-    const { isAuth, isBioSupported, isBioAuth, checkBioSupport, requestFingerprint, client } = useAuth()
+    const { isAuth, isBioSupported, isBioAuth, checkBioSupport, requestFingerprint } = useAuth()
+    const { client } = useClient()
     const [modalVisibility, setModalVisibility] = useState(false)
 
     const { myCart, toggleCart, setUserToCart, emptyCart } = useCart()
@@ -77,7 +79,7 @@ export default function CartOrder() {
             visible={modalVisibility}
             onBackdropPress={() => { if (Keyboard.isVisible()) Keyboard.dismiss(); setModalVisibility(false) }}
         >
-            <AlertModal
+            <ModalAlert
                 modalType="failed"
                 data={{ title: "Huella Dactilar REQUERIDA", message: "No es posible realizar PAGOS" }}
                 onButtonPress={() => setModalVisibility(false)}

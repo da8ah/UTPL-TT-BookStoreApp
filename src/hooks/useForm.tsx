@@ -1,19 +1,23 @@
 import { useState } from "react";
 import { create } from "zustand";
 import Client from "../model/core/entities/Client";
+import GestionDeInicio from "../model/core/usecases/GestionDeInicio";
+import RemoteService from "../model/services/RemoteService";
 
 type CartStoreType = {
-    client: Client,
-    resetClient: () => void
+    newClient: Client,
+    resetClient: () => void,
+    saveNewClient: () => Promise<string>
 }
 
-export const useFormStore = create<CartStoreType>()((set) => ({
-    client: new Client('', '', '', '', ''),
-    resetClient: () => set(() => ({ client: new Client('', '', '', '', '') }))
+export const useFormStore = create<CartStoreType>()((set, get) => ({
+    newClient: new Client('', '', '', '', ''),
+    resetClient: () => set(() => ({ newClient: new Client('', '', '', '', '') })),
+    saveNewClient: async () => await GestionDeInicio.crearCuenta(new RemoteService(), get().newClient)
 }))
 
 export const useFormState = () => {
-    const { client } = useFormStore()
+    const { newClient } = useFormStore()
     const [userCheck, setUserCheck] = useState<boolean>(true)
     const [nameCheck, setNameCheck] = useState<boolean>(true)
     const [emailCheck, setEmailCheck] = useState<boolean>(true)
@@ -49,11 +53,11 @@ export const useFormState = () => {
         setEmail('')
         setMobile('')
         setPassword('')
-        client.setUser('')
-        client.setName('')
-        client.setEmail('')
-        client.setMobile('')
-        client.setPassword('')
+        newClient.setUser('')
+        newClient.setName('')
+        newClient.setEmail('')
+        newClient.setMobile('')
+        newClient.setPassword('')
     }
     function cleanBillingInfo() {
         setToWhomCheck(true)
@@ -68,12 +72,12 @@ export const useFormState = () => {
         setCiudad('')
         setNumCasa('')
         setCalles('')
-        client.getBillingInfo().setToWhom('')
-        client.getBillingInfo().setCi('')
-        client.getBillingInfo().setProvincia('')
-        client.getBillingInfo().setCiudad('')
-        client.getBillingInfo().setNumCasa('')
-        client.getBillingInfo().setCalles('')
+        newClient.getBillingInfo().setToWhom('')
+        newClient.getBillingInfo().setCi('')
+        newClient.getBillingInfo().setProvincia('')
+        newClient.getBillingInfo().setCiudad('')
+        newClient.getBillingInfo().setNumCasa('')
+        newClient.getBillingInfo().setCalles('')
     }
 
     function setCheck(propName: string, value: boolean) {
@@ -117,47 +121,47 @@ export const useFormState = () => {
         switch (propName) {
             case 'user':
                 setUser(value)
-                client.setUser(value)
+                newClient.setUser(value.trimEnd())
                 break;
             case 'name':
                 setName(value)
-                client.setName(value)
+                newClient.setName(value.trimEnd())
                 break;
             case 'email':
                 setEmail(value)
-                client.setEmail(value)
+                newClient.setEmail(value.trimEnd())
                 break;
             case 'mobile':
                 setMobile(value)
-                client.setMobile(value)
+                newClient.setMobile(value.trimEnd())
                 break;
             case 'password':
                 setPassword(value)
-                client.setPassword(value)
+                newClient.setPassword(value) // Avoid Trim
                 break;
             case 'toWhom':
                 setToWhom(value)
-                client.getBillingInfo().setToWhom(value)
+                newClient.getBillingInfo().setToWhom(value.trimEnd())
                 break;
             case 'ci':
                 setCi(value)
-                client.getBillingInfo().setCi(value)
+                newClient.getBillingInfo().setCi(value.trimEnd())
                 break;
             case 'provincia':
                 setProvincia(value)
-                client.getBillingInfo().setProvincia(value)
+                newClient.getBillingInfo().setProvincia(value.trimEnd())
                 break;
             case 'ciudad':
                 setCiudad(value)
-                client.getBillingInfo().setCiudad(value)
+                newClient.getBillingInfo().setCiudad(value.trimEnd())
                 break;
             case 'numCasa':
                 setNumCasa(value)
-                client.getBillingInfo().setNumCasa(value)
+                newClient.getBillingInfo().setNumCasa(value.trimEnd())
                 break;
             case 'calles':
                 setCalles(value)
-                client.getBillingInfo().setCalles(value)
+                newClient.getBillingInfo().setCalles(value.trimEnd())
                 break;
         }
     }

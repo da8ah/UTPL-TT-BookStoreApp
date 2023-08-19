@@ -9,6 +9,7 @@ export type IPersistenciaCuentaLocal = {
 export default interface IPersistenciaCuenta {
 	iniciarSesion(client: Client): Promise<{ user: Client, token: string } | undefined>;
 	iniciarSesionConToken(token?: string): Promise<Client | undefined>;
+	crearNevaCuenta(client: Client): Promise<string>;
 	actualizarCuenta(client: Client, originalClientToChangeUsername?: Client): Promise<boolean>;
-	eliminarCuenta(client: Client): Promise<boolean>;
+	eliminarCuenta(): Promise<boolean>;
 }

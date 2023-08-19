@@ -6,15 +6,12 @@ import TransaccionesDelClient from "../model/core/usecases/client/TransaccionesD
 import LocalService from "../model/services/LocalService";
 import RemoteService from "../model/services/RemoteService";
 
-
 type AuthStoreType = {
     isLoading: boolean,
     isBioSupported: boolean,
     isBioAuth: boolean,
     isAuth: boolean,
-    client: Client,
-    updateClient: () => void,
-    tryToAuth: (credentials?: { user: string, password: string }) => void,
+    tryToAuth: (credentials?: { user: string, password: string }) => Promise<Client>,
     logout: () => void,
     checkBioSupport: () => void,
     requestFingerprint: () => Promise<boolean>
@@ -25,8 +22,6 @@ const useAuth = create<AuthStoreType>()((set) => ({
     isBioSupported: false,
     isBioAuth: false,
     isAuth: false,
-    client: new Client('', '', '', '', ''),
-    updateClient: () => set(state => ({ client: state.client })),
     tryToAuth: async (credentials?: { user: string, password: string }) => {
         set(() => ({ isLoading: true }))
         const service = new RemoteService()
@@ -35,15 +30,15 @@ const useAuth = create<AuthStoreType>()((set) => ({
             await GestionDeInicio.iniciarSesionConToken(service, storage)
             :
             await GestionDeInicio.iniciarSesionConUserPassword(service, storage, new Client(credentials.user, '', '', '', credentials.password))
-        if (client !== undefined) set(() => ({ isAuth: true, client }))
+        if (client !== undefined) set(() => ({ isAuth: true }))
         set(() => ({ isLoading: false }))
 
         if (client !== undefined) client.setTransactions(await TransaccionesDelClient.listarMisTransacciones(new RemoteService(await storage.obtenerTokenAlmacenado(), client.getUser()), client))
-        if (client !== undefined) set(() => ({ client }))
+        return client || new Client('', '', '', '', '')
     },
     logout: async () => {
         await GestionDeInicio.cerrarSesion(new LocalService())
-        set(() => ({ isLoading: false, isAuth: false, client: new Client('', '', '', '', '') }))
+        set(() => ({ isLoading: false, isAuth: false }))
     },
     checkBioSupport: async () => {
         set({ isBioSupported: (await LocalAuthentication.supportedAuthenticationTypesAsync()).includes(LocalAuthentication.AuthenticationType.FINGERPRINT) })

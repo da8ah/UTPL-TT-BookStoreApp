@@ -2,8 +2,10 @@ import { useNavigation } from "@react-navigation/native";
 import { Button, Card, Icon, Text } from "@ui-kitten/components";
 import { StyleSheet, View } from "react-native";
 import useAuth from "../../hooks/useAuth";
+import useClient from "../../hooks/useClient";
 import RoundButton from "../components/RoundButton";
 import { UserNavProps } from "../routes/types.nav";
+import Client from "../../model/core/entities/Client";
 
 const styles = StyleSheet.create({
     common: {
@@ -27,7 +29,8 @@ const styles = StyleSheet.create({
 
 export default function ProfileScreen() {
     const navigation = useNavigation<UserNavProps>()
-    const { client, logout } = useAuth()
+    const { logout } = useAuth()
+    const { client, updateClient } = useClient()
 
     const cuenta = {
         usuario: client.getUser(),
@@ -96,6 +99,7 @@ export default function ProfileScreen() {
                     accessoryRight={ButtonIcon}
                     onPress={() => {
                         logout()
+                        updateClient(new Client('', '', '', '', ''))
                     }}
                 >
                     Cerrar Sesión

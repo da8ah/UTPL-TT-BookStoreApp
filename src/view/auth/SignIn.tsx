@@ -3,6 +3,7 @@ import { Button, Icon, Text, useTheme } from "@ui-kitten/components";
 import { useState } from "react";
 import { KeyboardAvoidingView, TouchableOpacity, View } from "react-native";
 import useAuth from "../../hooks/useAuth";
+import useClient from "../../hooks/useClient";
 import useThemeMode from "../../hooks/useThemeMode";
 import FormInput from "../components/FormInput";
 import LoadingAlert from "../components/LoadingAlert";
@@ -13,11 +14,12 @@ export default function SignIn({ route }: { route: SignInRouteProps }) {
     const rootNavigation = useNavigation<RootNavProps>()
     const navigation = useNavigation<UserNavProps>()
     const { isLoading, tryToAuth } = useAuth()
+    const { updateClient } = useClient()
     const { themeMode } = useThemeMode()
     const theme = useTheme();
 
-    const [user, setUser] = useState<string>('da8ah.tiber');
-    const [password, setPassword] = useState<string>('tibernuncamuere');
+    const [user, setUser] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
     const [secureTextEntry, setSecureTextEntry] = useState(true);
     const togglePasswordVisibility = () => {
         setSecureTextEntry(!secureTextEntry);
@@ -68,8 +70,8 @@ export default function SignIn({ route }: { route: SignInRouteProps }) {
                                 activeOpacity={0.7}
                                 accessoryRight={() => <Icon name="log-in" fill="white" height="20" width="20" />}
                                 style={[{ width: '70%', backgroundColor: theme['color-info-500'], borderWidth: 0 }]}
-                                onPress={() => {
-                                    tryToAuth({ user, password })
+                                onPress={async () => {
+                                    updateClient(await tryToAuth({ user, password }))
                                     if (route.params?.calledFromPayment) {
                                         rootNavigation.navigate("CartOrder")
                                         setTimeout(() => {

@@ -15,7 +15,12 @@ export default function Home() {
     const [recent, setRecent] = useState<StockBook[]>([]);
     const [inOffer, setInOffer] = useState<StockBook[]>([]);
 
-    useEffect(() => { displayDataRetrieved() }, [])
+    useEffect(() => {
+        displayDataRetrieved()
+
+        if (inOffer.length === 0 && bestSeller.length === 0 &&
+            recommended.length === 0 && recent.length === 0) displayDataRetrieved()
+    }, [])
 
     const inOfferFiltered = useMemo(() =>
         books.filter((book) => {
@@ -78,5 +83,5 @@ export default function Home() {
         {bestSeller.length > 0 && <Bookshelf identifier={"bestSeller"} tag={"Más Vendido"} books={bestSeller} refreshing={false} />}
         {recommended.length > 0 && <Bookshelf identifier={"recommended"} tag={"Recomendado"} books={recommended} refreshing={false} />}
         {recent.length > 0 && <Bookshelf identifier={"recent"} tag={"Reciente"} books={recent} refreshing={false} />}
-    </ScrollView >
+    </ScrollView>
 }

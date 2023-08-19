@@ -1,19 +1,23 @@
 import { useNavigation } from "@react-navigation/native";
 import { Icon, useTheme } from "@ui-kitten/components";
 import { useEffect, useState } from "react";
-import { KeyboardAvoidingView, View } from "react-native";
+import { Keyboard, KeyboardAvoidingView, View } from "react-native";
 import { useFormState, useFormStore } from "../../hooks/useForm";
 import { patterns } from "../../utils/validations";
 import ActionButton from "../components/ActionButton";
+import ModalDisplay from "../components/ModalDisplay";
 import { UserNavProps } from "../routes/types.nav";
+import ModalAlert, { ModalAlertProps } from "../screens/layouts/ModalAlert";
 import { FormLayoutBasic, FormLayoutBilling } from "../screens/layouts/FormLayouts";
 import { globalStyles as styles } from "../styles/styles";
 
 export default function SignUp() {
     const navigation = useNavigation<UserNavProps>()
     const theme = useTheme()
+    const [modalVisibility, setModalVisibility] = useState(false)
+    const [codeStatus, setCodeStatus] = useState('')
 
-    const { client, resetClient } = useFormStore()
+    const { newClient, resetClient, saveNewClient } = useFormStore()
     const {
         userCheck,
         nameCheck,
@@ -47,17 +51,17 @@ export default function SignUp() {
     const [isBasicValid, setBasicValidity] = useState(false)
 
     useEffect(() => {
-        setProperty('user', client.getUser())
-        setProperty('name', client.getName())
-        setProperty('email', client.getEmail())
-        setProperty('mobile', client.getMobile())
-        setProperty('password', client.getPassword())
-        setProperty('toWhom', client.getBillingInfo().getToWhom())
-        setProperty('ci', client.getBillingInfo().getCi())
-        setProperty('provincia', client.getBillingInfo().getProvincia())
-        setProperty('ciudad', client.getBillingInfo().getCiudad())
-        setProperty('numCasa', client.getBillingInfo().getNumCasa())
-        setProperty('calles', client.getBillingInfo().getCalles())
+        setProperty('user', newClient.getUser())
+        setProperty('name', newClient.getName())
+        setProperty('email', newClient.getEmail())
+        setProperty('mobile', newClient.getMobile())
+        setProperty('password', newClient.getPassword())
+        setProperty('toWhom', newClient.getBillingInfo().getToWhom())
+        setProperty('ci', newClient.getBillingInfo().getCi())
+        setProperty('provincia', newClient.getBillingInfo().getProvincia())
+        setProperty('ciudad', newClient.getBillingInfo().getCiudad())
+        setProperty('numCasa', newClient.getBillingInfo().getNumCasa())
+        setProperty('calles', newClient.getBillingInfo().getCalles())
     }, [])
 
     const validateBasic = () => {
@@ -74,12 +78,19 @@ export default function SignUp() {
         return userCheck && nameCheck && emailCheck && mobileCheck && passwordCheck
     }
     const validateBillingInfo = () => {
-        setCheck('toWhom', new RegExp(patterns.BillingInfo.TO_WHOM).test(toWhom.trim()))
-        setCheck('ci', new RegExp(patterns.BillingInfo.CI).test(ci.trim()))
-        setCheck('provincia', new RegExp(patterns.BillingInfo.PROVINCIA).test(provincia.trim()))
-        setCheck('ciudad', new RegExp(patterns.BillingInfo.CIUDAD).test(ciudad.trim()))
-        setCheck('numCasa', new RegExp(patterns.BillingInfo.NUM_CASA).test(numCasa.trim()))
-        setCheck('calles', new RegExp(patterns.BillingInfo.CALLES).test(calles.trim()))
+        const toWhomCheck = new RegExp(patterns.BillingInfo.TO_WHOM).test(toWhom.trim())
+        const ciCheck = new RegExp(patterns.BillingInfo.CI).test(ci.trim())
+        const provinciaCheck = new RegExp(patterns.BillingInfo.PROVINCIA).test(provincia.trim())
+        const ciudadCheck = new RegExp(patterns.BillingInfo.CIUDAD).test(ciudad.trim())
+        const numCasaCheck = new RegExp(patterns.BillingInfo.NUM_CASA).test(numCasa.trim())
+        const callesCheck = new RegExp(patterns.BillingInfo.CALLES).test(calles.trim())
+        setCheck('toWhom', toWhomCheck)
+        setCheck('ci', ciCheck)
+        setCheck('provincia', provinciaCheck)
+        setCheck('ciudad', ciudadCheck)
+        setCheck('numCasa', numCasaCheck)
+        setCheck('calles', callesCheck)
+        return toWhomCheck && ciCheck && provinciaCheck && ciudadCheck && numCasaCheck && callesCheck
     }
 
     const bottomButtons = [
@@ -104,15 +115,72 @@ export default function SignUp() {
         {
             iconName: "save",
             backgroundColor: !isBasicValid ? theme['color-info-500'] : theme['color-success-500'],
-            onPress: () => {
+            onPress: async () => {
                 if (!isBasicValid) {
                     setBasicValidity(validateBasic())
                 } else {
-                    validateBillingInfo()
+                    if (validateBillingInfo()) {
+                        setCodeStatus(await saveNewClient())
+                        setModalVisibility(true)
+                    }
                 }
             }
         },
     ]
+
+    function getModalAlertProps(codeStatus: string): ModalAlertProps {
+        switch (codeStatus) {
+            case ":400": return {
+                modalType: "failed",
+                data: {
+                    title: "Datos NO válidos",
+                    iconName: "alert-triangle-outline",
+                    message: "Verifique los datos"
+                },
+                onButtonPress: () => setModalVisibility(false)
+            }
+            case "400": return {
+                modalType: "failed",
+                data: {
+                    title: "Falló la operación",
+                    message: "Verifique los datos"
+                },
+                onButtonPress: () => setModalVisibility(false)
+            }
+            case "303": return {
+                modalType: "failed",
+                data: {
+                    title: "Falló la operación",
+                    iconName: "alert-triangle-outline",
+                    message: "Registro duplicado"
+                },
+                onButtonPress: () => {
+                    setModalVisibility(false)
+                    navigation.navigate("SignIn")
+                }
+            }
+            case "201": return {
+                modalType: "success",
+                data: {
+                    title: "Registrado exitosamente",
+                    message: "Iniciar sesión"
+                },
+                onButtonPress: () => {
+                    setModalVisibility(false)
+                    navigation.navigate("SignIn")
+                }
+            }
+            default:
+                return {
+                    modalType: "failed",
+                    data: {
+                        title: "Fuera de servicio",
+                        message: "Servidor ocupado, intente más tarde"
+                    },
+                    onButtonPress: () => setModalVisibility(false)
+                }
+        }
+    }
 
     return (
         <View testID="test-signin" style={[styles.common, styles.body]}>
@@ -164,6 +232,15 @@ export default function SignUp() {
                     />
                 })}
             </View>
+            <ModalDisplay
+                visible={modalVisibility}
+                onBackdropPress={() => {
+                    if (Keyboard.isVisible()) Keyboard.dismiss()
+                    getModalAlertProps(codeStatus).onButtonPress()
+                }}
+            >
+                <ModalAlert {...getModalAlertProps(codeStatus)} />
+            </ModalDisplay>
         </View>
     )
 }

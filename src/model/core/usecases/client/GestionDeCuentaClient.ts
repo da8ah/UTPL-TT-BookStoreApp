@@ -18,7 +18,7 @@ export default class GestionDeCuentaClient {
 		return iPersistenciaClient.eliminarCard(client, card);
 	}
 
-	public static eliminarCuenta(iPersistenciaClient: IPersistenciaClient, client: Client): Promise<boolean> {
-		return iPersistenciaClient.eliminarCuenta(client);
+	public static eliminarCuenta(iPersistenciaClient: IPersistenciaClient): Promise<boolean> {
+		return iPersistenciaClient.eliminarCuenta();
 	}
 }

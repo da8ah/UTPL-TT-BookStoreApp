@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { View, ViewProps } from "react-native";
 import useAuth from "../hooks/useAuth";
 import useBooks from "../hooks/useBooks";
+import useClient from "../hooks/useClient";
 import useThemeMode from "../hooks/useThemeMode";
 import CartToggle from "./components/CartToggle";
 import LoadingAlert from "./components/LoadingAlert";
@@ -18,11 +19,12 @@ export default function MainFrame() {
     const { themeMode } = useThemeMode()
     const { isConnected } = useNetInfo()
     const { tryToAuth } = useAuth()
+    const { updateClient } = useClient()
     const { queryBooks } = useBooks()
     const [isLoading, setLoading] = useState(true)
 
     useEffect(() => {
-        tryToAuth()
+        (async () => updateClient(await tryToAuth()))()
         queryBooks()
         const timeout = setTimeout(async () => {
             setLoading(false)

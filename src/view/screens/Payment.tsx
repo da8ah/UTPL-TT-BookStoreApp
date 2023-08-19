@@ -4,13 +4,13 @@ import { Details } from "@stripe/stripe-react-native/lib/typescript/src/types/co
 import { Button, Icon, Text } from "@ui-kitten/components";
 import { useEffect, useState } from "react";
 import { Keyboard, KeyboardAvoidingView, StyleSheet, View } from "react-native";
-import useAuth from "../../hooks/useAuth";
 import useCart from "../../hooks/useCart";
+import useClient from "../../hooks/useClient";
 import Card from "../../model/core/entities/Card";
 import LoadingAlert from "../components/LoadingAlert";
 import ModalDisplay from "../components/ModalDisplay";
 import { RootNavProps } from "../routes/types.nav";
-import AlertModal, { AlertModalProps } from "./layouts/AlertModal";
+import ModalAlert, { ModalAlertProps } from "./layouts/ModalAlert";
 import CartStatus from "./layouts/CartStatus";
 
 const styles = StyleSheet.create({
@@ -65,7 +65,7 @@ export default function Payment() {
 
 const OrderFooter = () => {
     const navigation = useNavigation<RootNavProps>()
-    const { client, updateClient } = useAuth()
+    const { client, updateClient } = useClient()
     const { confirmPayment } = useConfirmPayment()
     const { sendPaymentToServer, sendTransactionToServer, emptyCart } = useCart()
 
@@ -75,7 +75,7 @@ const OrderFooter = () => {
     const [modalVisibility, setModalVisibility] = useState(false)
     const [isPaymentInProgress, setPaymentInProgress] = useState(false)
 
-    function getModalAlertProps(codeStatus: string): AlertModalProps {
+    function getModalAlertProps(codeStatus: string): ModalAlertProps {
         const volverAlCarrito = () => {
             setModalVisibility(false)
             navigation.navigate("CartOrder")
@@ -219,7 +219,7 @@ const OrderFooter = () => {
                         getModalAlertProps(codeStatus).onButtonPress()
                     }}
                 >
-                    <AlertModal {...getModalAlertProps(codeStatus)} />
+                    <ModalAlert {...getModalAlertProps(codeStatus)} />
                 </ModalDisplay>
             </View>
         </KeyboardAvoidingView>

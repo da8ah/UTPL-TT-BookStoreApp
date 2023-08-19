@@ -23,7 +23,7 @@ interface SuccessType extends ModalAttributes {
 
 export type AlertAttributes = (FailedType | SuccessType | undefined)
 export type AlertCallback = { onButtonPress: () => void }
-export type AlertModalProps = AlertAttributes & AlertCallback
+export type ModalAlertProps = AlertAttributes & AlertCallback
 
 const status = {
     failed: 'danger',
@@ -41,7 +41,7 @@ const iconColor = {
 }
 
 
-export default function AlertModal(props: AlertModalProps) {
+export default function ModalAlert(props: ModalAlertProps) {
     const {
         modalType,
         data,
