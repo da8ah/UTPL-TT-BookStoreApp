@@ -12,8 +12,10 @@ import RoundButton from "../components/RoundButton";
 import { UserNavProps } from "../routes/types.nav";
 import { globalStyles as styles } from "../styles/styles";
 import ModalConfirmation from "./layouts/ModalConfirmation";
+import ModalAlert, { ModalAlertProps } from "./layouts/ModalAlert";
 
 type confirmationType = "actualizar" | "eliminar"
+type alertType = "actualizar" | "eliminar"
 
 export default function UserEditor() {
     const navigation = useNavigation<UserNavProps>()
@@ -24,6 +26,8 @@ export default function UserEditor() {
     const [isEditorEnabled, setEditorState] = useState(false)
     const [modalVisibility, setModalVisibility] = useState(false)
     const [confirmationType, setConfirmationType] = useState<confirmationType>('actualizar')
+    const [codeStatus, setCodeStatus] = useState<alertType>('actualizar')
+    const [isAlertVisible, setAlertState] = useState(false)
 
     const bottomButtons = [
         {
@@ -65,19 +69,47 @@ export default function UserEditor() {
     } {
         switch (confirmationType) {
             case 'eliminar': return {
-                title: "Eliminar permanentemente",
+                title: "Eliminar cuenta",
                 status: "danger",
                 onButtonPress: () => {
                     deleteClient()
-                    logout()
-                    if (!isAuth) navigation.navigate("SignIn")
-                    setModalVisibility(false)
+                    setCodeStatus("eliminar")
+                    setAlertState(true)
                 }
             }
             case 'actualizar': return {
                 title: "Actualizar información",
                 status: "success",
                 onButtonPress: () => setModalVisibility(false)
+            }
+        }
+    }
+
+    function getModalAlertProps(codeStatus: alertType): ModalAlertProps {
+        switch (codeStatus) {
+            case 'eliminar': return {
+                modalType: "success",
+                data: {
+                    title: "Eliminado correctamente",
+                    message: "Iniciar sesión"
+                },
+                onButtonPress: () => {
+                    logout()
+                    if (!isAuth) navigation.navigate("SignIn")
+                    setModalVisibility(false)
+                    setAlertState(false)
+                }
+            }
+            case 'actualizar': return {
+                modalType: "success",
+                data: {
+                    title: "Actualizado correctamente",
+                    message: "Registro actualizado"
+                },
+                onButtonPress: () => {
+                    setModalVisibility(false)
+                    setAlertState(false)
+                }
             }
         }
     }
@@ -113,10 +145,15 @@ export default function UserEditor() {
             visible={modalVisibility}
             onBackdropPress={() => {
                 if (Keyboard.isVisible()) Keyboard.dismiss()
+                if (isAlertVisible) getModalAlertProps(codeStatus).onButtonPress()
                 setModalVisibility(false)
             }}
         >
-            <ModalConfirmation {...getModalProps(confirmationType)} />
+            {isAlertVisible ?
+                <ModalAlert {...getModalAlertProps(codeStatus)} />
+                :
+                <ModalConfirmation {...getModalProps(confirmationType)} />
+            }
         </ModalDisplay>
     </View>
 }
