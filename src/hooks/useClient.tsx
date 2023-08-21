@@ -3,15 +3,22 @@ import Client from "../model/core/entities/Client";
 import GestionDeCuentaClient from '../model/core/usecases/client/GestionDeCuentaClient';
 import LocalService from "../model/services/LocalService";
 import RemoteService from "../model/services/RemoteService";
+import TransaccionesDelClient from "../model/core/usecases/client/TransaccionesDelClient";
 
 type ClientStoreType = {
     client: Client,
+    postSignIn: () => void,
     updateClient: (client?: Client) => void,
     deleteClient: () => void
 }
 
 const useClient = create<ClientStoreType>()((set, get) => ({
     client: new Client('', '', '', '', ''),
+    postSignIn: async () => {
+        const storage = new LocalService()
+        get().client.setTransactions(await TransaccionesDelClient.listarMisTransacciones(new RemoteService(await storage.obtenerTokenAlmacenado(), get().client.getUser()), get().client))
+        set({ client: get().client })
+    },
     updateClient: (client?: Client) => set(state => ({ client: client || state.client })),
     deleteClient: async () => {
         const token = await new LocalService().obtenerTokenAlmacenado()

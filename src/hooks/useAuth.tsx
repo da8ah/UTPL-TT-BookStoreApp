@@ -32,8 +32,6 @@ const useAuth = create<AuthStoreType>()((set) => ({
             await GestionDeInicio.iniciarSesionConUserPassword(service, storage, new Client(credentials.user, '', '', '', credentials.password))
         if (client !== undefined) set(() => ({ isAuth: true }))
         set(() => ({ isLoading: false }))
-
-        if (client !== undefined) client.setTransactions(await TransaccionesDelClient.listarMisTransacciones(new RemoteService(await storage.obtenerTokenAlmacenado(), client.getUser()), client))
         return client || new Client('', '', '', '', '')
     },
     logout: async () => {

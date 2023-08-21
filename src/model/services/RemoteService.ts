@@ -56,7 +56,7 @@ export default class RemoteService implements IPersistenciaClient, IPersistencia
                     return res.json();
                 })
                 .then((body) => (user = ClientConverter.jsonToClient(body)));
-            return token && { token, user }
+            return token && { token, user } || undefined
         } catch (error) {
             console.error(error)
             return
@@ -77,7 +77,7 @@ export default class RemoteService implements IPersistenciaClient, IPersistencia
             await fetch(`${this.api}/clients/signin`, httpContent)
                 .then((res) => res.json())
                 .then((body) => (user = ClientConverter.jsonToClient(body)));
-            return user
+            return user || undefined
         } catch (error) {
             console.log(error)
             return

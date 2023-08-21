@@ -5,6 +5,7 @@ import { KeyboardAvoidingView, TouchableOpacity, View } from "react-native";
 import useAuth from "../../hooks/useAuth";
 import useClient from "../../hooks/useClient";
 import useThemeMode from "../../hooks/useThemeMode";
+import { patterns } from "../../utils/validations";
 import FormInput from "../components/FormInput";
 import LoadingAlert from "../components/LoadingAlert";
 import { RootNavProps, SignInRouteProps, UserNavProps } from "../routes/types.nav";
@@ -13,8 +14,8 @@ import { globalStyles as styles } from "../styles/styles";
 export default function SignIn({ route }: { route: SignInRouteProps }) {
     const rootNavigation = useNavigation<RootNavProps>()
     const navigation = useNavigation<UserNavProps>()
-    const { isLoading, tryToAuth } = useAuth()
-    const { updateClient } = useClient()
+    const { isLoading, isAuth, tryToAuth } = useAuth()
+    const { client, updateClient, postSignIn } = useClient()
     const { themeMode } = useThemeMode()
     const theme = useTheme();
 
@@ -71,12 +72,16 @@ export default function SignIn({ route }: { route: SignInRouteProps }) {
                                 accessoryRight={() => <Icon name="log-in" fill="white" height="20" width="20" />}
                                 style={[{ width: '70%', backgroundColor: theme['color-info-500'], borderWidth: 0 }]}
                                 onPress={async () => {
-                                    updateClient(await tryToAuth({ user, password }))
-                                    if (route.params?.calledFromPayment) {
-                                        rootNavigation.navigate("CartOrder")
-                                        setTimeout(() => {
-                                            rootNavigation.navigate("Payment")
-                                        }, 200)
+                                    if (new RegExp(patterns.User.USER).test(user.trim()) &&
+                                        new RegExp(patterns.User.PASSWORD).test(password)) {
+                                        updateClient(await tryToAuth({ user, password }))
+                                        if (client.getUser() !== '') postSignIn()
+                                        if (route.params?.calledFromPayment && isAuth) {
+                                            rootNavigation.navigate("CartOrder")
+                                            setTimeout(() => {
+                                                rootNavigation.navigate("Payment")
+                                            }, 200)
+                                        }
                                     }
                                 }}
                             >
