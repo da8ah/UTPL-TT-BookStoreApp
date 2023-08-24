@@ -17,11 +17,6 @@ const CardHeader = (props: { id: string, date: string }) => (
                 ID: <Text style={{ fontSize: 11 }}>{props.id}</Text>
             </Text>
         </View>
-        <TouchableOpacity>
-            <Text style={{ fontSize: 50, textAlign: "center" }} allowFontScaling adjustsFontSizeToFit>
-                💳
-            </Text>
-        </TouchableOpacity>
     </View>
 );
 
@@ -30,22 +25,9 @@ const CardLateral = (props: { user: string; cant: number }) => (
         <View style={[styles.transparentBackground, styles.client]}>
             <TouchableOpacity>
                 <Text style={{ fontSize: 50, textAlign: "center" }} allowFontScaling adjustsFontSizeToFit>
-                    😃
+                    💳
                 </Text>
             </TouchableOpacity>
-            <ScrollView
-                horizontal
-                alwaysBounceHorizontal
-                style={{ width: "90%", height: 20, marginHorizontal: "10%" }}
-                contentContainerStyle={{ flexGrow: 1, justifyContent: "center" }}
-                showsHorizontalScrollIndicator={false}
-                showsVerticalScrollIndicator={false}
-                fadingEdgeLength={50}
-            >
-                <Text style={{ fontSize: 12, textAlign: "center" }} allowFontScaling>
-                    {props.user}
-                </Text>
-            </ScrollView>
         </View>
         <View style={styles.transparentBackground}>
             <View style={[styles.transparentBackground, { flexDirection: "row", justifyContent: "flex-end" }]}>
