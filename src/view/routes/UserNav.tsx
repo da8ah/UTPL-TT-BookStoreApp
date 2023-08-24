@@ -5,6 +5,7 @@ import SignUp from "../auth/SignUp";
 import User from "../screens/User";
 import UserEditor from "../screens/UserEditor";
 import { UserStackParamList } from "./types.nav";
+import UserTransactions from "../screens/UserTransactions";
 
 const Stack = createNativeStackNavigator<UserStackParamList>();
 
@@ -20,7 +21,8 @@ export default function UserNav() {
         {isAuth ?
             <Stack.Group>
                 <Stack.Screen name='User' component={User} />
-                <Stack.Screen name='UserEditor' component={UserEditor} options={{ animation: "slide_from_right" }} />
+                <Stack.Screen name='UserEditor' component={UserEditor} options={{ animation: "fade" }} />
+                <Stack.Screen name='UserTransactions' component={UserTransactions} options={{ animation: "fade" }} />
             </Stack.Group>
             :
             <Stack.Group>

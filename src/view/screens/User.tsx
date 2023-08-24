@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
 export default function ProfileScreen() {
     const navigation = useNavigation<UserNavProps>()
     const { logout } = useAuth()
-    const { client, updateClient } = useClient()
+    const { client, updateClient, postSignIn } = useClient()
 
     const cuenta = {
         usuario: client.getUser(),
@@ -81,9 +81,28 @@ export default function ProfileScreen() {
                 </Text>
             </View>
             <View style={[styles.common, styles.buttonLayout]}>
-                <Button size="tiny" status="warning" accessoryLeft={CardIcon} style={{ borderRadius: 100 }} />
-                <RoundButton size="small" backgroundColor="black" icon={PersonIcon} onPress={() => navigation.navigate("UserEditor")} />
-                <Button size="tiny" status="success" accessoryLeft={BagIcon} style={{ borderRadius: 100 }} onPress={() => console.log(client.getTransactions())} />
+                <Button
+                    size="tiny"
+                    status="warning"
+                    accessoryLeft={CardIcon}
+                    style={{ borderRadius: 100 }}
+                />
+                <RoundButton
+                    size="small"
+                    backgroundColor="black"
+                    icon={PersonIcon}
+                    onPress={() => navigation.navigate("UserEditor")}
+                />
+                <Button
+                    size="tiny"
+                    status="success"
+                    accessoryLeft={BagIcon}
+                    style={{ borderRadius: 100 }}
+                    onPress={() => {
+                        postSignIn()
+                        navigation.navigate("UserTransactions")
+                    }}
+                />
             </View>
             <Card key="client" header={<CardHeader title="Cuenta" />} style={{ width: "80%", borderRadius: 20 }}>
                 {cuentaChildren}

@@ -20,6 +20,7 @@ export type RootStackParamList = {
 export type UserStackParamList = {
 	User: undefined;
 	UserEditor: undefined;
+	UserTransactions: undefined;
 	SignIn?: { calledFromPayment: boolean };
 	SignUp: undefined
 };
