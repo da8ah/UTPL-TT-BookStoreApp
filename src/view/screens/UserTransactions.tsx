@@ -1,12 +1,14 @@
 import { useNavigation } from "@react-navigation/native"
-import { Icon, List } from "@ui-kitten/components"
+import { FlashList } from "@shopify/flash-list"
+import { Button, Icon, Text } from "@ui-kitten/components"
 import { View } from "react-native"
 import useClient from "../../hooks/useClient"
 import CardTransaction from "../../model/core/entities/CardTransaction"
-import RoundButton from "../components/RoundButton"
 import { UserNavProps } from "../routes/types.nav"
 import { globalStyles as styles } from "../styles/styles"
 import TransactionCard from "./layouts/TransactionCard"
+import Cart from "../../model/core/entities/Cart"
+import ToBuyBook from "../../model/core/entities/ToBuyBook"
 
 export default function UserTransactions() {
     const navigation = useNavigation<UserNavProps>()
@@ -14,16 +16,23 @@ export default function UserTransactions() {
     const transactions = client.getTransactions().reverse() as CardTransaction[]
 
     return <View style={[styles.common, styles.body]}>
-        <View style={{ width: '80%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-            <RoundButton size="small" backgroundColor="black" icon={() => <Icon name="arrow-back" fill="white" height="30" width="30" />} onPress={() => navigation.navigate("User")} />
+        <View style={{ width: '100%', padding: 10, flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Button
+                size="small"
+                status="success"
+                accessoryLeft={() => <Icon name="arrow-back" fill="white" height="30" width="30" />}
+                onPress={() => navigation.navigate("User")}
+            />
+            <View style={{ width: '80%', paddingHorizontal: 5 }}>
+                <Text category="h2">Mis Compras</Text>
+            </View>
         </View>
-        <View style={[styles.common, { flex: 1 }]}>
-            <List
+        <View style={{ width: '100%', height: 500 }}>
+            <FlashList
                 scrollEnabled
                 key={"transactions"}
-                style={{ backgroundColor: "transparent" }}
                 contentContainerStyle={{ backgroundColor: "transparent" }}
-                initialNumToRender={transactions.length}
+                estimatedItemSize={250}
                 data={transactions}
                 extraData={transactions}
                 renderItem={TransactionCard}

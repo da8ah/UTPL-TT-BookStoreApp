@@ -115,8 +115,8 @@ export default function UserEditor() {
     }
 
     return <View style={[styles.common, { flex: 1 }]}>
-        <View style={{ display: isKeyboardVisible ? 'none' : 'flex', flex: 1, width: '80%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-            <RoundButton size="small" backgroundColor="black" icon={() => <Icon name="arrow-back" fill="white" height="30" width="30" />} onPress={() => navigation.navigate("User")} />
+        <View style={{ display: isKeyboardVisible ? 'none' : 'flex', flex: 1, width: '80%', flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+            <RoundButton size="small" backgroundColor="black" icon={() => <Icon name="close" fill="white" height="30" width="30" />} onPress={() => navigation.navigate("User")} />
         </View>
         <View style={styles.common}>
             <Icon name="person-outline" fill={theme['background-alternative-color-4']} height="100" width="100" />

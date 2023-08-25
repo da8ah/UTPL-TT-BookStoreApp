@@ -22,7 +22,7 @@ export default function UserNav() {
             <Stack.Group>
                 <Stack.Screen name='User' component={User} />
                 <Stack.Screen name='UserEditor' component={UserEditor} options={{ animation: "fade" }} />
-                <Stack.Screen name='UserTransactions' component={UserTransactions} options={{ animation: "fade" }} />
+                <Stack.Screen name='UserTransactions' component={UserTransactions} options={{ animation: "slide_from_right" }} />
             </Stack.Group>
             :
             <Stack.Group>

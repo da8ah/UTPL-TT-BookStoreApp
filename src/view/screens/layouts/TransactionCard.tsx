@@ -1,6 +1,7 @@
+import { ListRenderItemInfo } from "@shopify/flash-list";
 import { Button, Divider, Icon, Text, useTheme } from "@ui-kitten/components";
 import { memo } from "react";
-import { ListRenderItemInfo, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import useThemeMode from "../../../hooks/useThemeMode";
 import CardTransaction from "../../../model/core/entities/CardTransaction";
 
@@ -83,8 +84,8 @@ export default function TransactionCard(info: ListRenderItemInfo<CardTransaction
 const CardElement = memo((props: { info: any }) => {
     const { themeMode } = useThemeMode()
     const theme = useTheme()
-    const { info } = props
-    const transaction = info.item
+    const { item, index } = props.info
+    const transaction = item
     const cart = transaction.getCart()
     return (
         <View style={[styles.mainLayout, { backgroundColor: themeMode === 'dark' ? theme['background-basic-color-3'] : 'gainsboro' }]}>
@@ -106,7 +107,7 @@ const CardElement = memo((props: { info: any }) => {
             </View>
             {/* Button */}
             <Divider style={{ backgroundColor: 'white' }} />
-            <CardButton itemIndex={info.index} />
+            <CardButton itemIndex={index} />
         </View>
     );
 })
