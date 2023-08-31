@@ -1,6 +1,6 @@
 {
   "name": "utpl-tt-bookstoreapp",
-  "version": "0.17.4",
+  "version": "0.18.0",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "npx expo start --tunnel"
@@ -25,7 +25,8 @@
     "react-native-screens": "~3.20.0",
     "react-native-svg": "13.4.0",
     "zustand": "^4.4.1",
-    "@shopify/flash-list": "1.4.0"
+    "@shopify/flash-list": "1.4.0",
+    "expo-screen-capture": "~5.1.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

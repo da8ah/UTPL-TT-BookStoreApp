@@ -2,7 +2,6 @@ import * as LocalAuthentication from 'expo-local-authentication';
 import { create } from "zustand";
 import Client from "../model/core/entities/Client";
 import GestionDeInicio from "../model/core/usecases/GestionDeInicio";
-import TransaccionesDelClient from "../model/core/usecases/client/TransaccionesDelClient";
 import LocalService from "../model/services/LocalService";
 import RemoteService from "../model/services/RemoteService";
 

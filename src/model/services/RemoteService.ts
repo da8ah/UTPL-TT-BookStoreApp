@@ -58,7 +58,6 @@ export default class RemoteService implements IPersistenciaClient, IPersistencia
                 .then((body) => (user = ClientConverter.jsonToClient(body)));
             return token && { token, user } || undefined
         } catch (error) {
-            console.error(error)
             return
         }
     }
@@ -79,7 +78,6 @@ export default class RemoteService implements IPersistenciaClient, IPersistencia
                 .then((body) => (user = ClientConverter.jsonToClient(body)));
             return user || undefined
         } catch (error) {
-            console.log(error)
             return
         }
     }
@@ -94,7 +92,6 @@ export default class RemoteService implements IPersistenciaClient, IPersistencia
             }
             return await fetch(`${this.base}/signup`, httpContent).then(res => res.status.toString())
         } catch (error) {
-            console.error(error)
             return '500'
         }
     }
@@ -113,7 +110,6 @@ export default class RemoteService implements IPersistenciaClient, IPersistencia
             }
             return await fetch(this.apiClient, httpContent).then(res => res.ok)
         } catch (error) {
-            console.error(error)
             return false
         }
     }
@@ -125,7 +121,6 @@ export default class RemoteService implements IPersistenciaClient, IPersistencia
                 .then((body) => body.map((item: StockBook) => BookConverter.jsonToBook(item)));
             return data;
         } catch (error) {
-            console.error(error)
             return [];
         }
     }
@@ -147,7 +142,6 @@ export default class RemoteService implements IPersistenciaClient, IPersistencia
 
             return data;
         } catch (error) {
-            console.error(error)
             return [];
         }
     }
@@ -169,7 +163,6 @@ export default class RemoteService implements IPersistenciaClient, IPersistencia
 
             return data
         } catch (error) {
-            console.error(error)
             return []
         }
     }

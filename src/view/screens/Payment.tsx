@@ -2,6 +2,7 @@ import { useNavigation } from "@react-navigation/native";
 import { BillingDetails, CardField, StripeProvider, useConfirmPayment } from "@stripe/stripe-react-native";
 import { Details } from "@stripe/stripe-react-native/lib/typescript/src/types/components/CardFieldInput";
 import { Button, Icon, Text } from "@ui-kitten/components";
+import { usePreventScreenCapture } from 'expo-screen-capture';
 import { useEffect, useState } from "react";
 import { Keyboard, KeyboardAvoidingView, StyleSheet, View } from "react-native";
 import useCart from "../../hooks/useCart";
@@ -10,8 +11,8 @@ import Card from "../../model/core/entities/Card";
 import LoadingAlert from "../components/LoadingAlert";
 import ModalDisplay from "../components/ModalDisplay";
 import { RootNavProps } from "../routes/types.nav";
-import ModalAlert, { ModalAlertProps } from "./layouts/ModalAlert";
 import CartStatus from "./layouts/CartStatus";
+import ModalAlert, { ModalAlertProps } from "./layouts/ModalAlert";
 
 const styles = StyleSheet.create({
     common: {
@@ -35,6 +36,8 @@ const styles = StyleSheet.create({
 });
 
 export default function Payment() {
+    usePreventScreenCapture() // Screenshots NOT Allowed
+
     const { myCart, togglePayment, publishableKey, queryPublishableKey } = useCart()
     const fecha = new Date().toLocaleDateString("ec")
 

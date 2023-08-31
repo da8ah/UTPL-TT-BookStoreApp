@@ -1,5 +1,5 @@
 import { useNavigation } from "@react-navigation/native";
-import { Icon, Text, useTheme } from "@ui-kitten/components";
+import { Button, Icon, Text, useTheme } from "@ui-kitten/components";
 import { useState } from "react";
 import { Keyboard, KeyboardAvoidingView, View } from "react-native";
 import useAuth from "../../hooks/useAuth";
@@ -8,11 +8,10 @@ import useKeyboard from "../../hooks/useKeyboard";
 import ActionButton from "../components/ActionButton";
 import FormInput from "../components/FormInput";
 import ModalDisplay from "../components/ModalDisplay";
-import RoundButton from "../components/RoundButton";
 import { UserNavProps } from "../routes/types.nav";
 import { globalStyles as styles } from "../styles/styles";
-import ModalConfirmation from "./layouts/ModalConfirmation";
 import ModalAlert, { ModalAlertProps } from "./layouts/ModalAlert";
+import ModalConfirmation from "./layouts/ModalConfirmation";
 
 type confirmationType = "actualizar" | "eliminar"
 type alertType = "actualizar" | "eliminar"
@@ -115,8 +114,14 @@ export default function UserEditor() {
     }
 
     return <View style={[styles.common, { flex: 1 }]}>
-        <View style={{ display: isKeyboardVisible ? 'none' : 'flex', flex: 1, width: '80%', flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-            <RoundButton size="small" backgroundColor="black" icon={() => <Icon name="close" fill="white" height="30" width="30" />} onPress={() => navigation.navigate("User")} />
+        <View style={{ width: '100%', padding: 10, flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Button
+                size="small"
+                activeOpacity={0.3}
+                style={{ backgroundColor: 'black', borderWidth: 0 }}
+                accessoryLeft={() => <Icon name="arrow-back" fill="white" height="30" width="30" />}
+                onPress={() => navigation.navigate("User")}
+            />
         </View>
         <View style={styles.common}>
             <Icon name="person-outline" fill={theme['background-alternative-color-4']} height="100" width="100" />
