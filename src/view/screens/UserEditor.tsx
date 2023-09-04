@@ -1,10 +1,11 @@
 import { useNavigation } from "@react-navigation/native";
 import { Button, Icon, Text, useTheme } from "@ui-kitten/components";
+import { usePreventScreenCapture, allowScreenCaptureAsync, preventScreenCaptureAsync } from "expo-screen-capture";
 import { useEffect, useState } from "react";
 import { Keyboard, KeyboardAvoidingView, View } from "react-native";
 import useAuth from "../../hooks/useAuth";
 import useClient from "../../hooks/useClient";
-import { useFormState, useFormStore } from "../../hooks/useForm";
+import { useFormState } from "../../hooks/useForm";
 import useKeyboard from "../../hooks/useKeyboard";
 import { patterns } from "../../utils/validations";
 import ActionButton from "../components/ActionButton";
@@ -16,19 +17,21 @@ import ModalAlert, { ModalAlertProps } from "./layouts/ModalAlert";
 import ModalConfirmation from "./layouts/ModalConfirmation";
 
 type confirmationType = "actualizar" | "eliminar"
-type alertType = "actualizar" | "eliminar"
+type alertType = "bio" | "actualizar" | "eliminar"
 
 export default function UserEditor() {
+    usePreventScreenCapture() // Screenshots NOT Allowed
+
     const navigation = useNavigation<UserNavProps>()
     const theme = useTheme()
     const [isKeyboardVisible] = useKeyboard()
-    const { isAuth, logout } = useAuth()
+    const { isAuth, isBioAuth, isBioSupported, checkBioSupport, requestFingerprint, logout } = useAuth()
     const { client, deleteClient } = useClient()
 
     const [isEditorEnabled, setEditorState] = useState(false)
     const [modalVisibility, setModalVisibility] = useState(false)
     const [confirmationType, setConfirmationType] = useState<confirmationType>('actualizar')
-    const [codeStatus, setCodeStatus] = useState<alertType>('actualizar')
+    const [codeStatus, setCodeStatus] = useState<alertType>('bio')
     const [isAlertVisible, setAlertState] = useState(false)
 
     const {
@@ -62,6 +65,8 @@ export default function UserEditor() {
     const [isBasicOrBilling, setBasicState] = useState(true)
 
     useEffect(() => {
+        checkBioSupport()
+
         setProperty('user', client.getUser())
         setProperty('name', client.getName())
         setProperty('email', client.getEmail())
@@ -109,13 +114,27 @@ export default function UserEditor() {
             iconName: "edit",
             disabled: isEditorEnabled,
             backgroundColor: theme['color-warning-500'],
-            onPress: () => setEditorState(true)
+            onPress: async () => {
+                if (!isBioSupported) {
+                    setCodeStatus('bio')
+                    setAlertState(true)
+                    setModalVisibility(true)
+                    return
+                }
+                if (!(isBioAuth || await requestFingerprint("Desbloquear EDITOR"))) return
+
+                await allowScreenCaptureAsync()
+                setEditorState(true)
+            }
         },
         {
             iconName: "slash",
             disabled: !isEditorEnabled,
             backgroundColor: theme['color-warning-500'],
-            onPress: () => setEditorState(false)
+            onPress: async () => {
+                await preventScreenCaptureAsync()
+                setEditorState(false)
+            }
         },
         {
             iconName: "trash-2",
@@ -144,7 +163,7 @@ export default function UserEditor() {
     } {
         switch (confirmationType) {
             case 'eliminar': return {
-                title: "Eliminar cuenta",
+                title: "¿Eliminar Cuenta? 😨",
                 status: "danger",
                 onButtonPress: () => {
                     deleteClient()
@@ -166,6 +185,17 @@ export default function UserEditor() {
 
     function getModalAlertProps(codeStatus: alertType): ModalAlertProps {
         switch (codeStatus) {
+            case 'bio': return {
+                modalType: "failed",
+                data: {
+                    title: "Huella Dactilar REQUERIDA",
+                    message: "NO es posible EDITAR"
+                },
+                onButtonPress: () => {
+                    setModalVisibility(false)
+                    setAlertState(false)
+                }
+            }
             case 'eliminar': return {
                 modalType: "success",
                 data: {
@@ -194,32 +224,34 @@ export default function UserEditor() {
     }
 
     return <View style={[styles.common, { flex: 1 }]}>
-        <View style={{ width: '100%', padding: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Button
-                size="small"
-                status="warning"
-                accessoryLeft={() => <Icon name="arrow-back" fill="white" height="30" width="30" />}
-                onPress={() => navigation.navigate("User")}
-            />
-            <Text
-                style={{ fontSize: 20, fontFamily: "serif", fontStyle: "italic", textAlign: "center", textTransform: "uppercase" }}
-            >
-                {client.getUser()}
-            </Text>
-            <Button
-                size="small"
-                status="info"
-                accessoryLeft={() => <Icon name="flip-2" fill="white" height="30" width="30" />}
-                onPress={() => setBasicState(prev => !prev)}
-            />
-        </View>
-        <View style={styles.common}>
-            {isBasicOrBilling ?
-                <Icon name="person-outline" fill={theme['background-alternative-color-4']} height="80" width="80" />
-                :
-                <Icon name="pin-outline" fill={theme['background-alternative-color-4']} height="70" width="70" />
-            }
-        </View>
+        {!isKeyboardVisible && <>
+            <View style={{ width: '100%', padding: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Button
+                    size="small"
+                    status="warning"
+                    accessoryLeft={() => <Icon name="arrow-back" fill="white" height="30" width="30" />}
+                    onPress={() => navigation.navigate("User")}
+                />
+                <Text
+                    style={{ fontSize: 20, fontFamily: "serif", fontStyle: "italic", textAlign: "center", textTransform: "uppercase" }}
+                >
+                    {client.getUser()}
+                </Text>
+                <Button
+                    size="small"
+                    status="info"
+                    accessoryLeft={() => <Icon name="flip-2" fill="white" height="30" width="30" />}
+                    onPress={() => setBasicState(prev => !prev)}
+                />
+            </View>
+            <View style={styles.common}>
+                {isBasicOrBilling ?
+                    <Icon name="person-outline" fill={theme['background-alternative-color-4']} height="80" width="80" />
+                    :
+                    <Icon name="pin-outline" fill={theme['background-alternative-color-4']} height="70" width="70" />
+                }
+            </View>
+        </>}
         <KeyboardAvoidingView pointerEvents={isEditorEnabled ? 'auto' : 'none'} style={{ width: "100%", alignItems: "center" }} behavior="padding">
             {isBasicOrBilling ?
                 <FormLayoutBasic

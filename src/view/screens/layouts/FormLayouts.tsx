@@ -6,7 +6,7 @@ import { patterns } from "../../../utils/validations";
 import FormInput from "../../components/FormInput";
 
 export function FormLayoutBasic(props: {
-    disabled: boolean
+    disabled?: boolean
     data: {
         userCheck: boolean
         nameCheck: boolean
@@ -135,7 +135,7 @@ export function FormLayoutBasic(props: {
 }
 
 export function FormLayoutBilling(props: {
-    disabled: boolean
+    disabled?: boolean
     data: {
         toWhomCheck: boolean
         ciCheck: boolean

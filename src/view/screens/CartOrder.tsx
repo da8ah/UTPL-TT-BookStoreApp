@@ -65,7 +65,7 @@ export default function CartOrder() {
                 if (!isBioSupported) { setModalVisibility(true); return }
                 if (myCart.getToBuyBooks().length <= 0) return
 
-                if (isBioAuth || await requestFingerprint()) {
+                if (isBioAuth || await requestFingerprint("Desbloquear PAGOS")) {
                     if (isAuth) {
                         setUserToCart(client.getUser())
                         navigation.navigate("Payment")
@@ -81,7 +81,7 @@ export default function CartOrder() {
         >
             <ModalAlert
                 modalType="failed"
-                data={{ title: "Huella Dactilar REQUERIDA", message: "No es posible realizar PAGOS" }}
+                data={{ title: "Huella Dactilar REQUERIDA", message: "NO es posible realizar PAGOS" }}
                 onButtonPress={() => setModalVisibility(false)}
             />
         </ModalDisplay>

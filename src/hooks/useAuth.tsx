@@ -13,7 +13,7 @@ type AuthStoreType = {
     tryToAuth: (credentials?: { user: string, password: string }) => Promise<Client>,
     logout: () => void,
     checkBioSupport: () => void,
-    requestFingerprint: () => Promise<boolean>
+    requestFingerprint: (message: string) => Promise<boolean>
 }
 
 const useAuth = create<AuthStoreType>()((set) => ({
@@ -40,8 +40,8 @@ const useAuth = create<AuthStoreType>()((set) => ({
     checkBioSupport: async () => {
         set({ isBioSupported: (await LocalAuthentication.supportedAuthenticationTypesAsync()).includes(LocalAuthentication.AuthenticationType.FINGERPRINT) })
     },
-    requestFingerprint: async () => {
-        const auth = await LocalAuthentication.authenticateAsync({ promptMessage: "Desbloquear PAGOS", cancelLabel: "Cancelar" })
+    requestFingerprint: async (message: string) => {
+        const auth = await LocalAuthentication.authenticateAsync({ promptMessage: message, cancelLabel: "Cancelar" })
         set({ isBioAuth: auth.success })
         return auth.success
     }
