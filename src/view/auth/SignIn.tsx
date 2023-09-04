@@ -15,7 +15,7 @@ export default function SignIn({ route }: { route: SignInRouteProps }) {
     const rootNavigation = useNavigation<RootNavProps>()
     const navigation = useNavigation<UserNavProps>()
     const { isLoading, isAuth, tryToAuth } = useAuth()
-    const { client, updateClient, postSignIn } = useClient()
+    const { updateClient, postSignIn } = useClient()
     const { themeMode } = useThemeMode()
     const theme = useTheme();
 
@@ -44,6 +44,7 @@ export default function SignIn({ route }: { route: SignInRouteProps }) {
                         <View style={{ width: '80%' }}>
                             <FormInput
                                 isTop
+                                autoCapitalize="none"
                                 keyboardType="email-address"
                                 textContentType="emailAddress"
                                 formColor={theme['background-basic-color-2']}
@@ -75,7 +76,7 @@ export default function SignIn({ route }: { route: SignInRouteProps }) {
                                     if (new RegExp(patterns.User.USER).test(user.trim()) &&
                                         new RegExp(patterns.User.PASSWORD).test(password)) {
                                         updateClient(await tryToAuth({ user, password }))
-                                        if (client.getUser() !== '') postSignIn()
+                                        postSignIn()
                                         if (route.params?.calledFromPayment && isAuth) {
                                             rootNavigation.navigate("CartOrder")
                                             setTimeout(() => {

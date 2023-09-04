@@ -19,13 +19,13 @@ export default function MainFrame() {
     const { themeMode } = useThemeMode()
     const { isConnected } = useNetInfo()
     const { tryToAuth } = useAuth()
-    const { client, updateClient, postSignIn } = useClient()
+    const { updateClient, postSignIn } = useClient()
     const { queryBooks } = useBooks()
     const [isLoading, setLoading] = useState(true)
 
     const tryToSignIn = async () => {
         updateClient(await tryToAuth())
-        if (client.getUser() !== '') postSignIn()
+        postSignIn()
     }
 
     useEffect(() => {

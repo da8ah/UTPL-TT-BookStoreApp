@@ -28,8 +28,8 @@ export default function UserTransactions() {
     }
 
     useEffect(() => {
-        loadTransactions()
         postSignIn()
+        loadTransactions()
     }, [])
 
     return <View style={[styles.common, styles.body]}>
@@ -44,6 +44,11 @@ export default function UserTransactions() {
                 <Text category="h2">Mis Compras</Text>
             </View>
         </View>
+        {allTransactions.length === 0 &&
+            <Text category="h2" style={{ fontSize: 14, fontFamily: "serif", fontStyle: "italic" }}>
+                ¡Aún no tienes Compras!
+            </Text>
+        }
         <View style={{ flex: 1, width: '100%' }}>
             <FlashList
                 scrollEnabled

@@ -15,6 +15,8 @@ type ClientStoreType = {
 const useClient = create<ClientStoreType>()((set, get) => ({
     client: new Client('', '', '', '', ''),
     postSignIn: async () => {
+        if (get().client.getUser() === '') return
+
         const storage = new LocalService()
         get().client.setTransactions((await TransaccionesDelClient.listarMisTransacciones(new RemoteService(await storage.obtenerTokenAlmacenado(), get().client.getUser()), get().client)).reverse())
         set({ client: get().client })

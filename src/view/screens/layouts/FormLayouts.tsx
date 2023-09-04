@@ -57,6 +57,7 @@ export function FormLayoutBasic(props: {
             disabled={props.disabled}
             isTop
             style={{ borderRightWidth: 2, borderEndColor: !userCheck ? "red" : "mediumspringgreen" }}
+            autoCapitalize="none"
             keyboardType="email-address"
             textContentType="username"
             formMarginVertical={5}
@@ -86,6 +87,7 @@ export function FormLayoutBasic(props: {
         <FormInput
             disabled={props.disabled}
             style={{ borderRightWidth: 2, borderEndColor: !emailCheck ? "red" : "mediumspringgreen" }}
+            autoCapitalize="none"
             keyboardType="email-address"
             textContentType="emailAddress"
             formMarginVertical={5}

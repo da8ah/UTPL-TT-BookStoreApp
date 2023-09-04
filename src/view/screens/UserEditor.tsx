@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { Keyboard, KeyboardAvoidingView, View } from "react-native";
 import useAuth from "../../hooks/useAuth";
 import useClient from "../../hooks/useClient";
-import { useFormState } from "../../hooks/useForm";
+import { useFormState, useFormStore } from "../../hooks/useForm";
 import useKeyboard from "../../hooks/useKeyboard";
 import { patterns } from "../../utils/validations";
 import ActionButton from "../components/ActionButton";
@@ -27,6 +27,7 @@ export default function UserEditor() {
     const [isKeyboardVisible] = useKeyboard()
     const { isAuth, isBioAuth, isBioSupported, checkBioSupport, requestFingerprint, logout } = useAuth()
     const { client, deleteClient } = useClient()
+    const { resetClient } = useFormStore()
 
     const [isEditorEnabled, setEditorState] = useState(false)
     const [modalVisibility, setModalVisibility] = useState(false)
@@ -78,6 +79,8 @@ export default function UserEditor() {
         setProperty('ciudad', client.getBillingInfo().getCiudad())
         setProperty('numCasa', client.getBillingInfo().getNumCasa())
         setProperty('calles', client.getBillingInfo().getCalles())
+
+        return () => resetClient()
     }, [])
 
     const validateBasic = () => {
