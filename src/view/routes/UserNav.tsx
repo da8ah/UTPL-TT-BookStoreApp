@@ -21,7 +21,7 @@ export default function UserNav() {
         {isAuth ?
             <Stack.Group>
                 <Stack.Screen name='User' component={User} />
-                <Stack.Screen name='UserEditor' component={UserEditor} options={{ animation: "fade" }} />
+                <Stack.Screen name='UserEditor' component={UserEditor} options={{ animation: "slide_from_left" }} />
                 <Stack.Screen name='UserTransactions' component={UserTransactions} options={{ animation: "slide_from_right" }} />
             </Stack.Group>
             :

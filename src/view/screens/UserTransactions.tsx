@@ -11,7 +11,7 @@ import TransactionCard from "./layouts/TransactionCard"
 
 export default function UserTransactions() {
     const navigation = useNavigation<UserNavProps>()
-    const { client } = useClient()
+    const { client, postSignIn } = useClient()
     const [isLoading, setLoadingState] = useState(false)
     const [transactions, setTransactions] = useState<CardTransaction[]>([])
     const [counter, setCounter] = useState(1)
@@ -26,7 +26,11 @@ export default function UserTransactions() {
 
         setCounter(counter => counter + 1)
     }
-    useEffect(() => { loadTransactions() }, [])
+
+    useEffect(() => {
+        loadTransactions()
+        postSignIn()
+    }, [])
 
     return <View style={[styles.common, styles.body]}>
         <View style={{ width: '100%', padding: 10, flexDirection: 'row', justifyContent: 'space-between' }}>

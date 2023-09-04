@@ -1,15 +1,17 @@
 import { useNavigation } from "@react-navigation/native";
 import { Button, Icon, Text, useTheme } from "@ui-kitten/components";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Keyboard, KeyboardAvoidingView, View } from "react-native";
 import useAuth from "../../hooks/useAuth";
 import useClient from "../../hooks/useClient";
+import { useFormState, useFormStore } from "../../hooks/useForm";
 import useKeyboard from "../../hooks/useKeyboard";
+import { patterns } from "../../utils/validations";
 import ActionButton from "../components/ActionButton";
-import FormInput from "../components/FormInput";
 import ModalDisplay from "../components/ModalDisplay";
 import { UserNavProps } from "../routes/types.nav";
 import { globalStyles as styles } from "../styles/styles";
+import { FormLayoutBasic, FormLayoutBilling } from "./layouts/FormLayouts";
 import ModalAlert, { ModalAlertProps } from "./layouts/ModalAlert";
 import ModalConfirmation from "./layouts/ModalConfirmation";
 
@@ -18,15 +20,89 @@ type alertType = "actualizar" | "eliminar"
 
 export default function UserEditor() {
     const navigation = useNavigation<UserNavProps>()
+    const theme = useTheme()
     const [isKeyboardVisible] = useKeyboard()
     const { isAuth, logout } = useAuth()
     const { client, deleteClient } = useClient()
-    const theme = useTheme()
+
     const [isEditorEnabled, setEditorState] = useState(false)
     const [modalVisibility, setModalVisibility] = useState(false)
     const [confirmationType, setConfirmationType] = useState<confirmationType>('actualizar')
     const [codeStatus, setCodeStatus] = useState<alertType>('actualizar')
     const [isAlertVisible, setAlertState] = useState(false)
+
+    const {
+        userCheck,
+        nameCheck,
+        emailCheck,
+        mobileCheck,
+        passwordCheck,
+        user,
+        name,
+        email,
+        mobile,
+        password,
+
+        toWhomCheck,
+        ciCheck,
+        provinciaCheck,
+        ciudadCheck,
+        numCasaCheck,
+        callesCheck,
+        toWhom,
+        ci,
+        provincia,
+        ciudad,
+        numCasa,
+        calles,
+
+        setCheck,
+        setProperty
+    } = useFormState()
+    const [isBasicOrBilling, setBasicState] = useState(true)
+
+    useEffect(() => {
+        setProperty('user', client.getUser())
+        setProperty('name', client.getName())
+        setProperty('email', client.getEmail())
+        setProperty('mobile', client.getMobile())
+        setProperty('password', client.getPassword())
+        setProperty('toWhom', client.getBillingInfo().getToWhom())
+        setProperty('ci', client.getBillingInfo().getCi())
+        setProperty('provincia', client.getBillingInfo().getProvincia())
+        setProperty('ciudad', client.getBillingInfo().getCiudad())
+        setProperty('numCasa', client.getBillingInfo().getNumCasa())
+        setProperty('calles', client.getBillingInfo().getCalles())
+    }, [])
+
+    const validateBasic = () => {
+        const userCheck = new RegExp(patterns.User.USER).test(user.trim())
+        const nameCheck = new RegExp(patterns.User.NAME).test(name.trim())
+        const emailCheck = new RegExp(patterns.User.EMAIL).test(email.trim())
+        const mobileCheck = new RegExp(patterns.User.MOBILE).test(mobile.trim())
+        const passwordCheck = new RegExp(patterns.User.PASSWORD).test(password)
+        setCheck('user', userCheck)
+        setCheck('name', nameCheck)
+        setCheck('email', emailCheck)
+        setCheck('mobile', mobileCheck)
+        setCheck('password', passwordCheck)
+        return userCheck && nameCheck && emailCheck && mobileCheck && passwordCheck
+    }
+    const validateBillingInfo = () => {
+        const toWhomCheck = new RegExp(patterns.BillingInfo.TO_WHOM).test(toWhom.trim())
+        const ciCheck = new RegExp(patterns.BillingInfo.CI).test(ci.trim())
+        const provinciaCheck = new RegExp(patterns.BillingInfo.PROVINCIA).test(provincia.trim())
+        const ciudadCheck = new RegExp(patterns.BillingInfo.CIUDAD).test(ciudad.trim())
+        const numCasaCheck = new RegExp(patterns.BillingInfo.NUM_CASA).test(numCasa.trim())
+        const callesCheck = new RegExp(patterns.BillingInfo.CALLES).test(calles.trim())
+        setCheck('toWhom', toWhomCheck)
+        setCheck('ci', ciCheck)
+        setCheck('provincia', provinciaCheck)
+        setCheck('ciudad', ciudadCheck)
+        setCheck('numCasa', numCasaCheck)
+        setCheck('calles', callesCheck)
+        return toWhomCheck && ciCheck && provinciaCheck && ciudadCheck && numCasaCheck && callesCheck
+    }
 
     const bottomButtons = [
         {
@@ -58,7 +134,7 @@ export default function UserEditor() {
                 setConfirmationType("actualizar")
                 setModalVisibility(true)
             }
-        },
+        }
     ]
 
     function getModalProps(confirmationType: confirmationType): {
@@ -79,7 +155,11 @@ export default function UserEditor() {
             case 'actualizar': return {
                 title: "Actualizar información",
                 status: "success",
-                onButtonPress: () => setModalVisibility(false)
+                onButtonPress: () => {
+                    if (validateBasic()) setBasicState(false)
+                    if (validateBillingInfo()) console.log('updated')
+                    setModalVisibility(false)
+                }
             }
         }
     }
@@ -114,27 +194,70 @@ export default function UserEditor() {
     }
 
     return <View style={[styles.common, { flex: 1 }]}>
-        <View style={{ width: '100%', padding: 10, flexDirection: 'row', justifyContent: 'space-between' }}>
+        <View style={{ width: '100%', padding: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
             <Button
                 size="small"
-                activeOpacity={0.3}
-                style={{ backgroundColor: 'black', borderWidth: 0 }}
+                status="warning"
                 accessoryLeft={() => <Icon name="arrow-back" fill="white" height="30" width="30" />}
                 onPress={() => navigation.navigate("User")}
             />
-        </View>
-        <View style={styles.common}>
-            <Icon name="person-outline" fill={theme['background-alternative-color-4']} height="100" width="100" />
             <Text
-                style={{ fontSize: 30, fontFamily: "serif", fontStyle: "italic", textAlign: "center", textTransform: "uppercase" }}
+                style={{ fontSize: 20, fontFamily: "serif", fontStyle: "italic", textAlign: "center", textTransform: "uppercase" }}
             >
                 {client.getUser()}
             </Text>
+            <Button
+                size="small"
+                status="info"
+                accessoryLeft={() => <Icon name="flip-2" fill="white" height="30" width="30" />}
+                onPress={() => setBasicState(prev => !prev)}
+            />
         </View>
-        <KeyboardAvoidingView pointerEvents={!isEditorEnabled ? 'none' : 'auto'} style={{ flex: 2, width: '80%' }}>
-            <FormInput isTop disabled={!isEditorEnabled} selectTextOnFocus formColor={theme['background-basic-color-2']} title="Nombre" placeholder="Nombre" textStyle={{ textTransform: "capitalize" }} value={client.getName()} />
-            <FormInput disabled={!isEditorEnabled} selectTextOnFocus formColor={theme['background-basic-color-2']} inputMode="email" title="Email" placeholder="Email" value={client.getEmail()} />
-            <FormInput isBottom disabled={!isEditorEnabled} selectTextOnFocus formColor={theme['background-basic-color-2']} title="Móvil" placeholder="Móvil" value={client.getMobile()} />
+        <View style={styles.common}>
+            {isBasicOrBilling ?
+                <Icon name="person-outline" fill={theme['background-alternative-color-4']} height="80" width="80" />
+                :
+                <Icon name="pin-outline" fill={theme['background-alternative-color-4']} height="70" width="70" />
+            }
+        </View>
+        <KeyboardAvoidingView pointerEvents={isEditorEnabled ? 'auto' : 'none'} style={{ width: "100%", alignItems: "center" }} behavior="padding">
+            {isBasicOrBilling ?
+                <FormLayoutBasic
+                    disabled={!isEditorEnabled}
+                    data={{
+                        userCheck,
+                        nameCheck,
+                        emailCheck,
+                        mobileCheck,
+                        passwordCheck,
+                        user,
+                        name,
+                        email,
+                        mobile,
+                        password,
+                        setCheck,
+                        setProperty
+                    }} />
+                :
+                <FormLayoutBilling
+                    disabled={!isEditorEnabled}
+                    data={{
+                        toWhomCheck,
+                        ciCheck,
+                        provinciaCheck,
+                        ciudadCheck,
+                        numCasaCheck,
+                        callesCheck,
+                        toWhom,
+                        ci,
+                        provincia,
+                        ciudad,
+                        numCasa,
+                        calles,
+                        setCheck,
+                        setProperty
+                    }} />
+            }
         </KeyboardAvoidingView>
         <View style={{ display: isKeyboardVisible ? 'none' : 'flex', flex: 1, width: '100%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly' }}>
             {bottomButtons.map((button, index) => {

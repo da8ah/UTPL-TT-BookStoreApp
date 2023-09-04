@@ -65,9 +65,8 @@ export default function ProfileScreen() {
         </View>
     ))
 
-    const PersonIcon = () => <Icon name="person-outline" fill="#C6C6C6" height="50" width="50" />
-    const CardIcon = () => <Icon name="credit-card" fill="white" height="50" width="50" />
-    const BagIcon = () => <Icon name="shopping-bag" fill="white" height="50" width="50" />
+    const EditIcon = () => <Icon name="edit-2" fill="white" height="40" width="40" />
+    const BagIcon = () => <Icon name="shopping-bag" fill="white" height="40" width="40" />
     const CardHeader = (props: { title: string }) => (
         <Text style={{ backgroundColor: "black", color: "white", padding: 2, paddingLeft: 20 }}>{props.title}</Text>
     )
@@ -84,13 +83,8 @@ export default function ProfileScreen() {
                 <Button
                     size="tiny"
                     status="warning"
-                    accessoryLeft={CardIcon}
+                    accessoryLeft={EditIcon}
                     style={{ borderRadius: 100 }}
-                />
-                <RoundButton
-                    size="small"
-                    backgroundColor="black"
-                    icon={PersonIcon}
                     onPress={() => navigation.navigate("UserEditor")}
                 />
                 <Button
@@ -98,10 +92,7 @@ export default function ProfileScreen() {
                     status="success"
                     accessoryLeft={BagIcon}
                     style={{ borderRadius: 100 }}
-                    onPress={() => {
-                        postSignIn()
-                        navigation.navigate("UserTransactions")
-                    }}
+                    onPress={() => navigation.navigate("UserTransactions")}
                 />
             </View>
             <Card key="client" header={<CardHeader title="Cuenta" />} style={{ width: "80%", borderRadius: 20 }}>

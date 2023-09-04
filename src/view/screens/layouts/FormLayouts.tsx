@@ -1,11 +1,12 @@
 import { Icon, useTheme } from "@ui-kitten/components";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TouchableOpacity, View } from "react-native";
 import useThemeMode from "../../../hooks/useThemeMode";
 import { patterns } from "../../../utils/validations";
 import FormInput from "../../components/FormInput";
 
 export function FormLayoutBasic(props: {
+    disabled: boolean
     data: {
         userCheck: boolean
         nameCheck: boolean
@@ -39,6 +40,8 @@ export function FormLayoutBasic(props: {
         setProperty
     } = props.data
 
+    useEffect(() => { if (props.disabled) setSecureTextEntry(true) }, [props.disabled])
+
     const [secureTextEntry, setSecureTextEntry] = useState(true)
     const togglePasswordVisibility = () => {
         setSecureTextEntry(!secureTextEntry);
@@ -51,6 +54,7 @@ export function FormLayoutBasic(props: {
 
     return <View style={{ width: '80%' }}>
         <FormInput
+            disabled={props.disabled}
             isTop
             style={{ borderRightWidth: 2, borderEndColor: !userCheck ? "red" : "mediumspringgreen" }}
             keyboardType="email-address"
@@ -66,6 +70,7 @@ export function FormLayoutBasic(props: {
             }}
         />
         <FormInput
+            disabled={props.disabled}
             style={{ borderRightWidth: 2, borderEndColor: !nameCheck ? "red" : "mediumspringgreen" }}
             textContentType="name"
             formMarginVertical={5}
@@ -79,6 +84,7 @@ export function FormLayoutBasic(props: {
             }}
         />
         <FormInput
+            disabled={props.disabled}
             style={{ borderRightWidth: 2, borderEndColor: !emailCheck ? "red" : "mediumspringgreen" }}
             keyboardType="email-address"
             textContentType="emailAddress"
@@ -93,6 +99,7 @@ export function FormLayoutBasic(props: {
             }}
         />
         <FormInput
+            disabled={props.disabled}
             style={{ borderRightWidth: 2, borderEndColor: !mobileCheck ? "red" : "mediumspringgreen" }}
             keyboardType="phone-pad"
             textContentType="telephoneNumber"
@@ -107,6 +114,7 @@ export function FormLayoutBasic(props: {
             }}
         />
         <FormInput
+            disabled={props.disabled}
             isBottom
             style={{ borderRightWidth: 2, borderEndColor: !passwordCheck ? "red" : "mediumspringgreen" }}
             formMarginVertical={5}
@@ -127,6 +135,7 @@ export function FormLayoutBasic(props: {
 }
 
 export function FormLayoutBilling(props: {
+    disabled: boolean
     data: {
         toWhomCheck: boolean
         ciCheck: boolean
@@ -165,6 +174,7 @@ export function FormLayoutBilling(props: {
 
     return <View style={{ width: '80%' }}>
         <FormInput
+            disabled={props.disabled}
             isTop
             capitalized
             style={{ borderRightWidth: 2, borderEndColor: !toWhomCheck ? "red" : "mediumspringgreen" }}
@@ -181,6 +191,7 @@ export function FormLayoutBilling(props: {
             }}
         />
         <FormInput
+            disabled={props.disabled}
             style={{ borderRightWidth: 2, borderEndColor: !ciCheck ? "red" : "mediumspringgreen" }}
             formMarginVertical={5}
             formColor={theme['background-basic-color-2']}
@@ -193,6 +204,7 @@ export function FormLayoutBilling(props: {
             }}
         />
         <FormInput
+            disabled={props.disabled}
             capitalized
             style={{ borderRightWidth: 2, borderEndColor: !provinciaCheck ? "red" : "mediumspringgreen" }}
             textContentType="addressState"
@@ -207,6 +219,7 @@ export function FormLayoutBilling(props: {
             }}
         />
         <FormInput
+            disabled={props.disabled}
             capitalized
             style={{ borderRightWidth: 2, borderEndColor: !ciudadCheck ? "red" : "mediumspringgreen" }}
             textContentType="addressCity"
@@ -221,6 +234,7 @@ export function FormLayoutBilling(props: {
             }}
         />
         <FormInput
+            disabled={props.disabled}
             capitalized
             style={{ borderRightWidth: 2, borderEndColor: !numCasaCheck ? "red" : "mediumspringgreen" }}
             keyboardType="phone-pad"
@@ -236,6 +250,7 @@ export function FormLayoutBilling(props: {
             }}
         />
         <FormInput
+            disabled={props.disabled}
             isBottom
             capitalized
             style={{ borderRightWidth: 2, borderEndColor: !callesCheck ? "red" : "mediumspringgreen" }}

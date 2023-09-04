@@ -7,8 +7,8 @@ import { patterns } from "../../utils/validations";
 import ActionButton from "../components/ActionButton";
 import ModalDisplay from "../components/ModalDisplay";
 import { UserNavProps } from "../routes/types.nav";
-import ModalAlert, { ModalAlertProps } from "../screens/layouts/ModalAlert";
 import { FormLayoutBasic, FormLayoutBilling } from "../screens/layouts/FormLayouts";
+import ModalAlert, { ModalAlertProps } from "../screens/layouts/ModalAlert";
 import { globalStyles as styles } from "../styles/styles";
 
 export default function SignUp() {
@@ -103,7 +103,6 @@ export default function SignUp() {
                 } else {
                     setBasicValidity(false)
                 }
-
             }
         },
         {
