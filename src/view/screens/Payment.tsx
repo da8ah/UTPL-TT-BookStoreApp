@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
 });
 
 export default function Payment() {
-    usePreventScreenCapture() // Screenshots NOT Allowed
+    usePreventScreenCapture('payment') // Screenshots NOT Allowed
 
     const { myCart, togglePayment, publishableKey, queryPublishableKey } = useCart()
     const fecha = new Date().toLocaleDateString("ec")

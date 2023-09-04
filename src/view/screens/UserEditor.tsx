@@ -1,6 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
 import { Button, Icon, Text, useTheme } from "@ui-kitten/components";
-import { usePreventScreenCapture, allowScreenCaptureAsync, preventScreenCaptureAsync } from "expo-screen-capture";
+import { allowScreenCaptureAsync, preventScreenCaptureAsync } from "expo-screen-capture";
 import { useEffect, useState } from "react";
 import { Keyboard, KeyboardAvoidingView, View } from "react-native";
 import useAuth from "../../hooks/useAuth";
@@ -20,8 +20,6 @@ type confirmationType = "actualizar" | "eliminar"
 type alertType = "bio" | "actualizar" | "eliminar"
 
 export default function UserEditor() {
-    usePreventScreenCapture() // Screenshots NOT Allowed
-
     const navigation = useNavigation<UserNavProps>()
     const theme = useTheme()
     const [isKeyboardVisible] = useKeyboard()
@@ -80,7 +78,10 @@ export default function UserEditor() {
         setProperty('numCasa', client.getBillingInfo().getNumCasa())
         setProperty('calles', client.getBillingInfo().getCalles())
 
-        return () => resetClient()
+        return () => {
+            resetClient();
+            (async () => { await preventScreenCaptureAsync('user') })()
+        }
     }, [])
 
     const validateBasic = () => {
@@ -126,7 +127,7 @@ export default function UserEditor() {
                 }
                 if (!(isBioAuth || await requestFingerprint("Desbloquear EDITOR"))) return
 
-                await allowScreenCaptureAsync()
+                await allowScreenCaptureAsync('user')
                 setEditorState(true)
             }
         },
@@ -135,7 +136,7 @@ export default function UserEditor() {
             disabled: !isEditorEnabled,
             backgroundColor: theme['color-warning-500'],
             onPress: async () => {
-                await preventScreenCaptureAsync()
+                await preventScreenCaptureAsync('user')
                 setEditorState(false)
             }
         },

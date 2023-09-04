@@ -1,5 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
 import { Button, Card, Icon, Text } from "@ui-kitten/components";
+import { usePreventScreenCapture } from "expo-screen-capture";
 import { useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 import useAuth from "../../hooks/useAuth";
@@ -7,7 +8,6 @@ import useClient from "../../hooks/useClient";
 import { useFormStore } from "../../hooks/useForm";
 import Client from "../../model/core/entities/Client";
 import { UserNavProps } from "../routes/types.nav";
-import { usePreventScreenCapture } from "expo-screen-capture";
 
 const styles = StyleSheet.create({
     common: {
@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
 });
 
 export default function ProfileScreen() {
-    usePreventScreenCapture() // Screenshots NOT Allowed
+    usePreventScreenCapture('user') // Screenshots NOT Allowed
 
     const navigation = useNavigation<UserNavProps>()
     const { logout } = useAuth()
