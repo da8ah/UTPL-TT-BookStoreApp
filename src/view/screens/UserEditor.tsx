@@ -80,7 +80,7 @@ export default function UserEditor() {
 
         return () => {
             resetClient();
-            (async () => { await preventScreenCaptureAsync('user') })()
+            (async () => await preventScreenCaptureAsync())()
         }
     }, [])
 
@@ -127,7 +127,7 @@ export default function UserEditor() {
                 }
                 if (!(isBioAuth || await requestFingerprint("Desbloquear EDITOR"))) return
 
-                await allowScreenCaptureAsync('user')
+                await allowScreenCaptureAsync()
                 setEditorState(true)
             }
         },
@@ -136,7 +136,7 @@ export default function UserEditor() {
             disabled: !isEditorEnabled,
             backgroundColor: theme['color-warning-500'],
             onPress: async () => {
-                await preventScreenCaptureAsync('user')
+                await preventScreenCaptureAsync()
                 setEditorState(false)
             }
         },

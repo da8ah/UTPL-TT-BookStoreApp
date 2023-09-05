@@ -7,6 +7,7 @@ import BookStore from "../screens/BookStore";
 import Home from "../screens/Home";
 import UserNav from "./UserNav";
 import { BottomTabParamList } from "./types.nav";
+import { allowScreenCaptureAsync, preventScreenCaptureAsync } from "expo-screen-capture";
 
 const UiKittenBottomTabNav = ({ navigation, state }: BottomTabBarProps) => {
     const [isKeyboardVisible] = useKeyboard()
@@ -28,13 +29,17 @@ const UiKittenBottomTabNav = ({ navigation, state }: BottomTabBarProps) => {
             style={{ display: isKeyboardVisible ? 'none' : 'flex', backgroundColor: theme['tab-basic-color'], paddingVertical: 2 }}
             indicatorStyle={{ backgroundColor: themeMode === 'dark' ? theme['color-info-500'] : indicatorColor, height: 2 }}
             selectedIndex={state.index}
-            onSelect={(index) => {
-                if (index === 2 && Keyboard.isVisible()) {
-                    Keyboard.dismiss();
-                    setTimeout(() => {
-                        if (!Keyboard.isVisible()) navigation.navigate(state.routeNames[index])
-                    }, 100)
-                } else navigation.navigate(state.routeNames[index])
+            onSelect={async (index) => {
+                if (index === 2) {
+                    await preventScreenCaptureAsync()
+                    if (Keyboard.isVisible()) {
+                        Keyboard.dismiss();
+                        setTimeout(() => {
+                            if (!Keyboard.isVisible()) navigation.navigate(state.routeNames[index])
+                        }, 100)
+                    }
+                } else await allowScreenCaptureAsync()
+                navigation.navigate(state.routeNames[index])
             }}
         >
             <BottomNavigationTab
