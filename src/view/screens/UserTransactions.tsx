@@ -1,6 +1,7 @@
 import { useNavigation } from "@react-navigation/native"
 import { FlashList } from "@shopify/flash-list"
 import { Button, Icon, Text } from "@ui-kitten/components"
+import { allowScreenCaptureAsync, preventScreenCaptureAsync } from "expo-screen-capture"
 import { useEffect, useMemo, useState } from "react"
 import { View } from "react-native"
 import useClient from "../../hooks/useClient"
@@ -28,8 +29,12 @@ export default function UserTransactions() {
     }
 
     useEffect(() => {
+        (async () => await allowScreenCaptureAsync())();
         postSignIn()
         loadTransactions()
+        return () => {
+            (async () => await preventScreenCaptureAsync())()
+        }
     }, [])
 
     return <View style={[styles.common, styles.body]}>

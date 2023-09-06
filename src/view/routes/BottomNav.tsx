@@ -1,19 +1,30 @@
 import { BottomTabBarProps, createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { BottomNavigation, BottomNavigationTab, Icon, Text, useTheme } from "@ui-kitten/components";
+import { allowScreenCaptureAsync, preventScreenCaptureAsync } from "expo-screen-capture";
+import { useEffect } from "react";
 import { Keyboard } from "react-native";
 import useKeyboard from "../../hooks/useKeyboard";
+import useScreenCapture from "../../hooks/useScreenCapture";
 import useThemeMode from "../../hooks/useThemeMode";
 import BookStore from "../screens/BookStore";
 import Home from "../screens/Home";
 import UserNav from "./UserNav";
 import { BottomTabParamList } from "./types.nav";
-import { allowScreenCaptureAsync, preventScreenCaptureAsync } from "expo-screen-capture";
 
 const UiKittenBottomTabNav = ({ navigation, state }: BottomTabBarProps) => {
     const [isKeyboardVisible] = useKeyboard()
+    const { isUserNav, setIsUserNavTo } = useScreenCapture()
     const { themeMode } = useThemeMode()
     const theme = useTheme()
     const indicatorColor = theme['background-alternative-color-1']
+
+    useEffect(() => {
+        (async () => {
+            if (isUserNav) await preventScreenCaptureAsync()
+            else
+                await allowScreenCaptureAsync()
+        })()
+    }, [isUserNav])
 
     const HomeIcon = () => <Icon name="home" fill={indicatorColor} height="30" width="30" />;
     const BookStoreIconOpen = () => <Icon name="book-open" fill={indicatorColor} height="30" width="30" />;
@@ -31,14 +42,14 @@ const UiKittenBottomTabNav = ({ navigation, state }: BottomTabBarProps) => {
             selectedIndex={state.index}
             onSelect={async (index) => {
                 if (index === 2) {
-                    await preventScreenCaptureAsync()
+                    setIsUserNavTo(true)
                     if (Keyboard.isVisible()) {
                         Keyboard.dismiss();
                         setTimeout(() => {
                             if (!Keyboard.isVisible()) navigation.navigate(state.routeNames[index])
                         }, 100)
                     }
-                } else await allowScreenCaptureAsync()
+                } else { setIsUserNavTo(false) }
                 navigation.navigate(state.routeNames[index])
             }}
         >

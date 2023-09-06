@@ -1,10 +1,12 @@
 import { useNavigation } from "@react-navigation/native";
 import { Button, Icon, List, Text, useTheme } from "@ui-kitten/components";
+import { allowScreenCaptureAsync, preventScreenCaptureAsync } from "expo-screen-capture";
 import { useEffect, useState } from "react";
 import { Keyboard, StyleSheet, View } from "react-native";
 import useAuth from "../../hooks/useAuth";
 import useCart from "../../hooks/useCart";
 import useClient from "../../hooks/useClient";
+import useScreenCapture from "../../hooks/useScreenCapture";
 import ModalDisplay from "../components/ModalDisplay";
 import { RootNavProps } from "../routes/types.nav";
 import CartItem from "./layouts/CartItem";
@@ -14,6 +16,7 @@ import ModalAlert from "./layouts/ModalAlert";
 export default function CartOrder() {
     const navigation = useNavigation<RootNavProps>()
     const theme = useTheme()
+    const { isUserNav } = useScreenCapture()
     const { isAuth, isBioSupported, isBioAuth, checkBioSupport, requestFingerprint } = useAuth()
     const { client } = useClient()
     const [modalVisibility, setModalVisibility] = useState(false)
@@ -22,9 +25,16 @@ export default function CartOrder() {
     const fecha = new Date().toLocaleDateString("ec")
 
     useEffect(() => {
+        (async () => await allowScreenCaptureAsync())();
         toggleCart()
         checkBioSupport()
-        return () => toggleCart()
+        return () => {
+            (async () => {
+                if (isUserNav) await preventScreenCaptureAsync()
+                else await allowScreenCaptureAsync()
+            })();
+            toggleCart()
+        }
     }, []);
 
     const CleanIcon = () => <Icon name="trash-2" fill="white" height="25" width="25" />
