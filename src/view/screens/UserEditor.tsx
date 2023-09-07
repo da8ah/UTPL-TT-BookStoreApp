@@ -23,9 +23,9 @@ export default function UserEditor() {
     const navigation = useNavigation<UserNavProps>()
     const theme = useTheme()
     const [isKeyboardVisible] = useKeyboard()
-    const { isAuth, isBioAuth, isBioSupported, checkBioSupport, requestFingerprint, logout } = useAuth()
-    const { client, deleteClient } = useClient()
-    const { resetClient } = useFormStore()
+    const { tryToAuth, isAuth, isBioAuth, isBioSupported, checkBioSupport, requestFingerprint, logout } = useAuth()
+    const { client, updateClientAccount, deleteClientAccount } = useClient()
+    const { newClient, resetClient } = useFormStore()
 
     const [isEditorEnabled, setEditorState] = useState(false)
     const [modalVisibility, setModalVisibility] = useState(false)
@@ -174,7 +174,7 @@ export default function UserEditor() {
                 title: "¿Eliminar Cuenta? 😨",
                 status: "danger",
                 onButtonPress: () => {
-                    deleteClient()
+                    deleteClientAccount()
                     setCodeStatus("eliminar")
                     setAlertState(true)
                 }
@@ -182,10 +182,16 @@ export default function UserEditor() {
             case 'actualizar': return {
                 title: "Actualizar información",
                 status: "success",
-                onButtonPress: () => {
+                onButtonPress: async () => {
                     if (validateBasic()) setBasicState(false)
-                    if (validateBillingInfo()) console.log('updated')
-                    setModalVisibility(false)
+                    if (validateBillingInfo()) {
+                        if (await updateClientAccount(newClient)) {
+                            tryToAuth()
+                            setModalVisibility(false)
+                            setCodeStatus("actualizar")
+                            setAlertState(true)
+                        }
+                    }
                 }
             }
         }

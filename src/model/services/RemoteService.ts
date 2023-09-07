@@ -95,17 +95,20 @@ export default class RemoteService implements IPersistenciaClient, IPersistencia
             return '500'
         }
     }
-    async actualizarCuenta(client: Client, originalClientToChangeUsername?: Client): Promise<boolean> {
+    async actualizarCuenta(client: Client): Promise<boolean> {
         try {
             if (this.token === '' || this.username === '') throw Error('Unauthorized, must signin!')
 
             const httpContent = {
-                method: "DELETE",
+                method: "PUT",
                 headers: {
+                    "Content-Type": "application/json",
                     Authorization: this.token
                 },
+                body: JSON.stringify(client)
             }
-            return await fetch(this.apiClient, httpContent).then(res => res.ok)
+            console.log(client)
+            return await fetch(this.apiClient, httpContent).then(res => { console.log(res); return res.ok })
         } catch (error) {
             return false
         }

@@ -4,8 +4,8 @@ import Client from "../../entities/Client";
 import IPersistenciaClient from "../../ports/persistencia/IPersistenciaClient";
 
 export default class GestionDeCuentaClient {
-	public static actualizarCuenta(iPersistenciaClient: IPersistenciaClient, client: Client, originalClientToChangeUsername?: Client): Promise<boolean> {
-		return originalClientToChangeUsername !== undefined ? iPersistenciaClient.actualizarCuenta(client, originalClientToChangeUsername) : iPersistenciaClient.actualizarCuenta(client);
+	public static actualizarCuenta(iPersistenciaClient: IPersistenciaClient, client: Client): Promise<boolean> {
+		return iPersistenciaClient.actualizarCuenta(client);
 	}
 
 	public static actualizarBillingInfo(iPersistenciaClient: IPersistenciaClient, client: Client, billingInfo: BillingInfo): Promise<boolean> {

@@ -9,7 +9,8 @@ type ClientStoreType = {
     client: Client,
     postSignIn: () => void,
     updateClient: (client?: Client) => void,
-    deleteClient: () => void
+    updateClientAccount: (client: Client) => Promise<boolean>,
+    deleteClientAccount: () => void
 }
 
 const useClient = create<ClientStoreType>()((set, get) => ({
@@ -17,12 +18,20 @@ const useClient = create<ClientStoreType>()((set, get) => ({
     postSignIn: async () => {
         if (get().client.getUser() === '') return
 
-        const storage = new LocalService()
-        get().client.setTransactions((await TransaccionesDelClient.listarMisTransacciones(new RemoteService(await storage.obtenerTokenAlmacenado(), get().client.getUser()), get().client)).reverse())
+        const token = await new LocalService().obtenerTokenAlmacenado()
+        get().client.setTransactions(
+            (await TransaccionesDelClient.listarMisTransacciones(
+                new RemoteService(token, get().client.getUser()), get().client)
+            ).reverse()
+        )
         set({ client: get().client })
     },
     updateClient: (client?: Client) => set(state => ({ client: client || state.client })),
-    deleteClient: async () => {
+    updateClientAccount: async (client: Client) => {
+        const token = await new LocalService().obtenerTokenAlmacenado()
+        return await GestionDeCuentaClient.actualizarCuenta(new RemoteService(token, get().client.getUser()), client)
+    },
+    deleteClientAccount: async () => {
         const token = await new LocalService().obtenerTokenAlmacenado()
         if (await GestionDeCuentaClient.eliminarCuenta(new RemoteService(token, get().client.getUser())))
             set({ client: new Client('', '', '', '', '') })

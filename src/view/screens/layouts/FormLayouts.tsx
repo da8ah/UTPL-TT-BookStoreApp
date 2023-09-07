@@ -129,7 +129,7 @@ export function FormLayoutBasic(props: {
             accessoryRight={PasswordVisibilityIcon}
             secureTextEntry={secureTextEntry}
             title="Clave"
-            placeholder="Clave"
+            placeholder="Nueva clave"
             defaultValue={password}
             onChangeText={input => {
                 setProperty('password', input)
@@ -147,7 +147,7 @@ export function FormLayoutBasic(props: {
             accessoryRight={PasswordVisibilityIcon}
             secureTextEntry={secureTextEntry}
             title="Clave"
-            placeholder="Repetir"
+            placeholder="Repetir clave"
             defaultValue={passwordCopy}
             onChangeText={input => {
                 setProperty('passwordCopy', input)
