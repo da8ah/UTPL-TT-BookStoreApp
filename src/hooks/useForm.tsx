@@ -23,11 +23,13 @@ export const useFormState = () => {
     const [emailCheck, setEmailCheck] = useState<boolean>(true)
     const [mobileCheck, setMobileCheck] = useState<boolean>(true)
     const [passwordCheck, setPasswordCheck] = useState<boolean>(true)
+    const [passwordCopyCheck, setPasswordCopyCheck] = useState<boolean>(true)
     const [user, setUser] = useState<string>('')
     const [name, setName] = useState<string>('')
     const [email, setEmail] = useState<string>('')
     const [mobile, setMobile] = useState<string>('')
     const [password, setPassword] = useState<string>('')
+    const [passwordCopy, setPasswordCopy] = useState<string>('')
 
     const [toWhomCheck, setToWhomCheck] = useState<boolean>(true)
     const [ciCheck, setCiCheck] = useState<boolean>(true)
@@ -48,11 +50,13 @@ export const useFormState = () => {
         setEmailCheck(true)
         setMobileCheck(true)
         setPasswordCheck(true)
+        setPasswordCopyCheck(true)
         setUser('')
         setName('')
         setEmail('')
         setMobile('')
         setPassword('')
+        setPasswordCopy('')
         newClient.setUser('')
         newClient.setName('')
         newClient.setEmail('')
@@ -97,6 +101,9 @@ export const useFormState = () => {
             case 'password':
                 setPasswordCheck(value)
                 break;
+            case 'passwordCopy':
+                setPasswordCopyCheck(value)
+                break;
             case 'toWhom':
                 setToWhomCheck(value)
                 break;
@@ -139,6 +146,10 @@ export const useFormState = () => {
                 setPassword(value)
                 newClient.setPassword(value) // Avoid Trim
                 break;
+            case 'passwordCopy':
+                setPasswordCopy(value)
+                setPasswordCopyCheck(password === value) // Avoid Trim
+                break;
             case 'toWhom':
                 setToWhom(value)
                 newClient.getBillingInfo().setToWhom(value.trimEnd())
@@ -172,11 +183,13 @@ export const useFormState = () => {
         emailCheck,
         mobileCheck,
         passwordCheck,
+        passwordCopyCheck,
         user,
         name,
         email,
         mobile,
         password,
+        passwordCopy,
 
         toWhomCheck,
         ciCheck,

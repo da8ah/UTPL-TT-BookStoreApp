@@ -39,11 +39,13 @@ export default function UserEditor() {
         emailCheck,
         mobileCheck,
         passwordCheck,
+        passwordCopyCheck,
         user,
         name,
         email,
         mobile,
         password,
+        passwordCopy,
 
         toWhomCheck,
         ciCheck,
@@ -90,12 +92,14 @@ export default function UserEditor() {
         const emailCheck = new RegExp(patterns.User.EMAIL).test(email.trim())
         const mobileCheck = new RegExp(patterns.User.MOBILE).test(mobile.trim())
         const passwordCheck = new RegExp(patterns.User.PASSWORD).test(password)
+        const passwordCopyCheck = new RegExp(patterns.User.PASSWORD).test(password) && password === passwordCopy
         setCheck('user', userCheck)
         setCheck('name', nameCheck)
         setCheck('email', emailCheck)
         setCheck('mobile', mobileCheck)
         setCheck('password', passwordCheck)
-        return userCheck && nameCheck && emailCheck && mobileCheck && passwordCheck
+        setCheck('passwordCopy', passwordCopyCheck)
+        return userCheck && nameCheck && emailCheck && mobileCheck && passwordCheck && passwordCopyCheck
     }
     const validateBillingInfo = () => {
         const toWhomCheck = new RegExp(patterns.BillingInfo.TO_WHOM).test(toWhom.trim())
@@ -250,7 +254,7 @@ export default function UserEditor() {
             </View>
             <View style={styles.common}>
                 {isBasicOrBilling ?
-                    <Icon name="person-outline" fill={theme['background-alternative-color-4']} height="80" width="80" />
+                    <Icon name="person-outline" fill={theme['background-alternative-color-4']} height="70" width="70" />
                     :
                     <Icon name="pin-outline" fill={theme['background-alternative-color-4']} height="70" width="70" />
                 }
@@ -266,11 +270,13 @@ export default function UserEditor() {
                         emailCheck,
                         mobileCheck,
                         passwordCheck,
+                        passwordCopyCheck,
                         user,
                         name,
                         email,
                         mobile,
                         password,
+                        passwordCopy,
                         setCheck,
                         setProperty
                     }} />

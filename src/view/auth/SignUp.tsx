@@ -24,11 +24,13 @@ export default function SignUp() {
         emailCheck,
         mobileCheck,
         passwordCheck,
+        passwordCopyCheck,
         user,
         name,
         email,
         mobile,
         password,
+        passwordCopy,
 
         toWhomCheck,
         ciCheck,
@@ -56,6 +58,7 @@ export default function SignUp() {
         setProperty('email', newClient.getEmail())
         setProperty('mobile', newClient.getMobile())
         setProperty('password', newClient.getPassword())
+        setProperty('passwordCopy', newClient.getPassword())
         setProperty('toWhom', newClient.getBillingInfo().getToWhom())
         setProperty('ci', newClient.getBillingInfo().getCi())
         setProperty('provincia', newClient.getBillingInfo().getProvincia())
@@ -70,12 +73,14 @@ export default function SignUp() {
         const emailCheck = new RegExp(patterns.User.EMAIL).test(email.trim())
         const mobileCheck = new RegExp(patterns.User.MOBILE).test(mobile.trim())
         const passwordCheck = new RegExp(patterns.User.PASSWORD).test(password)
+        const passwordCopyCheck = new RegExp(patterns.User.PASSWORD).test(password) && password === passwordCopy
         setCheck('user', userCheck)
         setCheck('name', nameCheck)
         setCheck('email', emailCheck)
         setCheck('mobile', mobileCheck)
         setCheck('password', passwordCheck)
-        return userCheck && nameCheck && emailCheck && mobileCheck && passwordCheck
+        setCheck('passwordCopy', passwordCopyCheck)
+        return userCheck && nameCheck && emailCheck && mobileCheck && passwordCheck && passwordCopyCheck
     }
     const validateBillingInfo = () => {
         const toWhomCheck = new RegExp(patterns.BillingInfo.TO_WHOM).test(toWhom.trim())
@@ -194,11 +199,13 @@ export default function SignUp() {
                         emailCheck,
                         mobileCheck,
                         passwordCheck,
+                        passwordCopyCheck,
                         user,
                         name,
                         email,
                         mobile,
                         password,
+                        passwordCopy,
                         setCheck,
                         setProperty
                     }} />

@@ -95,8 +95,20 @@ export default class RemoteService implements IPersistenciaClient, IPersistencia
             return '500'
         }
     }
-    async actualizarCuenta(client: Client, originalClientToChangeUsername?: Client | undefined): Promise<boolean> {
-        throw new Error("Method not implemented.");
+    async actualizarCuenta(client: Client, originalClientToChangeUsername?: Client): Promise<boolean> {
+        try {
+            if (this.token === '' || this.username === '') throw Error('Unauthorized, must signin!')
+
+            const httpContent = {
+                method: "DELETE",
+                headers: {
+                    Authorization: this.token
+                },
+            }
+            return await fetch(this.apiClient, httpContent).then(res => res.ok)
+        } catch (error) {
+            return false
+        }
     }
     async eliminarCuenta(): Promise<boolean> {
         try {

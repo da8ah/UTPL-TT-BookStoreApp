@@ -13,11 +13,13 @@ export function FormLayoutBasic(props: {
         emailCheck: boolean
         mobileCheck: boolean
         passwordCheck: boolean
+        passwordCopyCheck: boolean
         user: string
         name: string
         email: string
         mobile: string
         password: string
+        passwordCopy: string
         setCheck: (propName: string, value: boolean) => void
         setProperty: (propName: string, value: string) => void
     }
@@ -31,11 +33,13 @@ export function FormLayoutBasic(props: {
         emailCheck,
         mobileCheck,
         passwordCheck,
+        passwordCopyCheck,
         user,
         name,
         email,
         mobile,
         password,
+        passwordCopy,
         setCheck,
         setProperty
     } = props.data
@@ -117,7 +121,6 @@ export function FormLayoutBasic(props: {
         />
         <FormInput
             disabled={props.disabled}
-            isBottom
             style={{ borderRightWidth: 2, borderEndColor: !passwordCheck ? "red" : "mediumspringgreen" }}
             formMarginVertical={5}
             formColor={theme['background-basic-color-2']}
@@ -131,6 +134,23 @@ export function FormLayoutBasic(props: {
             onChangeText={input => {
                 setProperty('password', input)
                 setCheck('password', new RegExp(patterns.User.PASSWORD).test(input.trimEnd()))
+            }}
+        />
+        <FormInput
+            disabled={props.disabled}
+            isBottom
+            style={{ borderRightWidth: 2, borderEndColor: !passwordCopyCheck ? "red" : "mediumspringgreen" }}
+            formMarginVertical={5}
+            formColor={theme['background-basic-color-2']}
+            keyboardType={!secureTextEntry ? "visible-password" : undefined}
+            textContentType="password"
+            accessoryRight={PasswordVisibilityIcon}
+            secureTextEntry={secureTextEntry}
+            title="Clave"
+            placeholder="Repetir"
+            defaultValue={passwordCopy}
+            onChangeText={input => {
+                setProperty('passwordCopy', input)
             }}
         />
     </View>
