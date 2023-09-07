@@ -5,6 +5,7 @@ import { allowScreenCaptureAsync, preventScreenCaptureAsync } from "expo-screen-
 import { useEffect, useMemo, useState } from "react"
 import { View } from "react-native"
 import useClient from "../../hooks/useClient"
+import useScreenshot from "../../hooks/useScreenshot"
 import CardTransaction from "../../model/core/entities/CardTransaction"
 import { UserNavProps } from "../routes/types.nav"
 import { globalStyles as styles } from "../styles/styles"
@@ -12,6 +13,7 @@ import TransactionCard from "./layouts/TransactionCard"
 
 export default function UserTransactions() {
     const navigation = useNavigation<UserNavProps>()
+    const { setScreenshotAllowedState } = useScreenshot()
     const { client, postSignIn } = useClient()
     const [isLoading, setLoadingState] = useState(false)
     const [transactions, setTransactions] = useState<CardTransaction[]>([])
@@ -30,9 +32,11 @@ export default function UserTransactions() {
 
     useEffect(() => {
         (async () => await allowScreenCaptureAsync())();
+        setScreenshotAllowedState(true)
         postSignIn()
         loadTransactions()
         return () => {
+            setScreenshotAllowedState(false);
             (async () => await preventScreenCaptureAsync())()
         }
     }, [])

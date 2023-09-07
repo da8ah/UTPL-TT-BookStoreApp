@@ -6,7 +6,7 @@ import { Keyboard, StyleSheet, View } from "react-native";
 import useAuth from "../../hooks/useAuth";
 import useCart from "../../hooks/useCart";
 import useClient from "../../hooks/useClient";
-import useScreenCapture from "../../hooks/useScreenCapture";
+import useScreenshot from "../../hooks/useScreenshot";
 import ModalDisplay from "../components/ModalDisplay";
 import { RootNavProps } from "../routes/types.nav";
 import CartItem from "./layouts/CartItem";
@@ -16,7 +16,7 @@ import ModalAlert from "./layouts/ModalAlert";
 export default function CartOrder() {
     const navigation = useNavigation<RootNavProps>()
     const theme = useTheme()
-    const { isUserNav } = useScreenCapture()
+    const { isScreenshotAllowed } = useScreenshot()
     const { isAuth, isBioSupported, isBioAuth, checkBioSupport, requestFingerprint } = useAuth()
     const { client } = useClient()
     const [modalVisibility, setModalVisibility] = useState(false)
@@ -30,8 +30,8 @@ export default function CartOrder() {
         checkBioSupport()
         return () => {
             (async () => {
-                if (isUserNav) await preventScreenCaptureAsync()
-                else await allowScreenCaptureAsync()
+                if (isScreenshotAllowed) await allowScreenCaptureAsync()
+                else await preventScreenCaptureAsync()
             })();
             toggleCart()
         }

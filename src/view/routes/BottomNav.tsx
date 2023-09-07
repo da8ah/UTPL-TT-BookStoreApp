@@ -4,7 +4,7 @@ import { allowScreenCaptureAsync, preventScreenCaptureAsync } from "expo-screen-
 import { useEffect } from "react";
 import { Keyboard } from "react-native";
 import useKeyboard from "../../hooks/useKeyboard";
-import useScreenCapture from "../../hooks/useScreenCapture";
+import useScreenshot from "../../hooks/useScreenshot";
 import useThemeMode from "../../hooks/useThemeMode";
 import BookStore from "../screens/BookStore";
 import Home from "../screens/Home";
@@ -13,18 +13,17 @@ import { BottomTabParamList } from "./types.nav";
 
 const UiKittenBottomTabNav = ({ navigation, state }: BottomTabBarProps) => {
     const [isKeyboardVisible] = useKeyboard()
-    const { isUserNav, setIsUserNavTo } = useScreenCapture()
+    const { isScreenshotAllowed, setScreenshotAllowedState } = useScreenshot()
     const { themeMode } = useThemeMode()
     const theme = useTheme()
     const indicatorColor = theme['background-alternative-color-1']
 
     useEffect(() => {
         (async () => {
-            if (isUserNav) await preventScreenCaptureAsync()
-            else
-                await allowScreenCaptureAsync()
+            if (isScreenshotAllowed) await allowScreenCaptureAsync()
+            else await preventScreenCaptureAsync()
         })()
-    }, [isUserNav])
+    }, [isScreenshotAllowed])
 
     const HomeIcon = () => <Icon name="home" fill={indicatorColor} height="30" width="30" />;
     const BookStoreIconOpen = () => <Icon name="book-open" fill={indicatorColor} height="30" width="30" />;
@@ -42,14 +41,14 @@ const UiKittenBottomTabNav = ({ navigation, state }: BottomTabBarProps) => {
             selectedIndex={state.index}
             onSelect={async (index) => {
                 if (index === 2) {
-                    setIsUserNavTo(true)
+                    setScreenshotAllowedState(false)
                     if (Keyboard.isVisible()) {
                         Keyboard.dismiss();
                         setTimeout(() => {
                             if (!Keyboard.isVisible()) navigation.navigate(state.routeNames[index])
                         }, 100)
                     }
-                } else { setIsUserNavTo(false) }
+                } else setScreenshotAllowedState(true)
                 navigation.navigate(state.routeNames[index])
             }}
         >
