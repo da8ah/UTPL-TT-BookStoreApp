@@ -58,7 +58,7 @@ export default function SignUp() {
         setProperty('email', newClient.getEmail())
         setProperty('mobile', newClient.getMobile())
         setProperty('password', newClient.getPassword())
-        setProperty('passwordCopy', newClient.getPassword())
+        setProperty('passwordCopy', "")
         setProperty('toWhom', newClient.getBillingInfo().getToWhom())
         setProperty('ci', newClient.getBillingInfo().getCi())
         setProperty('provincia', newClient.getBillingInfo().getProvincia())
@@ -193,22 +193,24 @@ export default function SignUp() {
             </View>
             <KeyboardAvoidingView style={{ width: "100%", alignItems: "center" }} behavior="padding">
                 {!isBasicValid ?
-                    <FormLayoutBasic data={{
-                        userCheck,
-                        nameCheck,
-                        emailCheck,
-                        mobileCheck,
-                        passwordCheck,
-                        passwordCopyCheck,
-                        user,
-                        name,
-                        email,
-                        mobile,
-                        password,
-                        passwordCopy,
-                        setCheck,
-                        setProperty
-                    }} />
+                    <FormLayoutBasic
+                        doublePass
+                        data={{
+                            userCheck,
+                            nameCheck,
+                            emailCheck,
+                            mobileCheck,
+                            passwordCheck,
+                            passwordCopyCheck,
+                            user,
+                            name,
+                            email,
+                            mobile,
+                            password,
+                            passwordCopy,
+                            setCheck,
+                            setProperty
+                        }} />
                     :
                     <FormLayoutBilling data={{
                         toWhomCheck,

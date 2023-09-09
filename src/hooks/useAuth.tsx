@@ -12,6 +12,7 @@ type AuthStoreType = {
     isAuth: boolean,
     tryToAuth: (credentials?: { user: string, password: string }) => Promise<Client>,
     logout: () => void,
+    logoutBio: () => void,
     checkBioSupport: () => void,
     requestFingerprint: (message: string) => Promise<boolean>
 }
@@ -37,6 +38,7 @@ const useAuth = create<AuthStoreType>()((set) => ({
         await GestionDeInicio.cerrarSesion(new LocalService())
         set(() => ({ isLoading: false, isAuth: false }))
     },
+    logoutBio: () => set(() => ({ isBioAuth: false })),
     checkBioSupport: async () => {
         set({ isBioSupported: (await LocalAuthentication.supportedAuthenticationTypesAsync()).includes(LocalAuthentication.AuthenticationType.FINGERPRINT) })
     },

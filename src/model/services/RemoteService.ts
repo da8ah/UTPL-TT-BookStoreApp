@@ -26,13 +26,10 @@ export default class RemoteService implements IPersistenciaClient, IPersistencia
         this.apiTransactions = `${this.apiClient}/transactions`
     }
 
-    actualizarBillingInfo(client: Client, billingInfo: BillingInfo): Promise<boolean> {
+    agregarCard(card: Card): Promise<boolean> {
         throw new Error("Method not implemented.");
     }
-    agregarCard(client: Client, card: Card): Promise<boolean> {
-        throw new Error("Method not implemented.");
-    }
-    eliminarCard(client: Client, card: Card): Promise<boolean> {
+    eliminarCard(card: Card): Promise<boolean> {
         throw new Error("Method not implemented.");
     }
     agregarTransaction(client: Client, transaction: Transaction): Promise<boolean> {
@@ -105,14 +102,31 @@ export default class RemoteService implements IPersistenciaClient, IPersistencia
                     "Content-Type": "application/json",
                     Authorization: this.token
                 },
-                body: JSON.stringify(client)
+                body: JSON.stringify(ClientConverter.clientToJSON(client))
             }
-            console.log(client)
-            return await fetch(this.apiClient, httpContent).then(res => { console.log(res); return res.ok })
+            return await fetch(this.apiClient, httpContent).then(res => res.ok)
         } catch (error) {
             return false
         }
     }
+    async actualizarBillingInfo(billingInfo: BillingInfo): Promise<boolean> {
+        try {
+            if (this.token === '' || this.username === '') throw Error('Unauthorized, must signin!')
+
+            const httpContent = {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: this.token
+                },
+                body: JSON.stringify(billingInfo)
+            }
+            return await fetch(`${this.apiClient}/billing`, httpContent).then(res => res.ok)
+        } catch (error) {
+            return false
+        }
+    }
+
     async eliminarCuenta(): Promise<boolean> {
         try {
             if (this.token === '' || this.username === '') throw Error('Unauthorized, must signin!')

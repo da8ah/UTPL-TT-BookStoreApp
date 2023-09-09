@@ -63,14 +63,6 @@ export class ClientConverter {
 		if (client.getEmail() !== undefined) json[ClientEnum.EMAIL] = client.getEmail();
 		if (client.getMobile() !== undefined) json[ClientEnum.MOBILE] = client.getMobile();
 		if (client.getPassword() !== undefined) json[ClientEnum.PASSWORD] = client.getPassword();
-
-		const billingInfo = client.getBillingInfo();
-		if (billingInfo !== undefined) json[ClientEnum.BILLING_INFO] = this.billingInfoToJSON(billingInfo);
-		const cards = client.getCards();
-		if (cards !== undefined) json[ClientEnum.CARDS] = cards.map((card) => this.cardToJSON(card));
-		const transactions = client.getTransactions();
-		if (transactions !== undefined) json[ClientEnum.TRANSACTIONS] = transactions.map((transaction) => TransactionConverter.cardTransactionToJSON(transaction as CardTransaction));
-
 		return json;
 	}
 

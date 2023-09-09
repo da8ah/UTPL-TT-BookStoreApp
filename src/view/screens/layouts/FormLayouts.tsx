@@ -6,6 +6,7 @@ import { patterns } from "../../../utils/validations";
 import FormInput from "../../components/FormInput";
 
 export function FormLayoutBasic(props: {
+    doublePass?: boolean
     disabled?: boolean
     data: {
         userCheck: boolean
@@ -13,13 +14,13 @@ export function FormLayoutBasic(props: {
         emailCheck: boolean
         mobileCheck: boolean
         passwordCheck: boolean
-        passwordCopyCheck: boolean
+        passwordCopyCheck?: boolean
         user: string
         name: string
         email: string
         mobile: string
         password: string
-        passwordCopy: string
+        passwordCopy?: string
         setCheck: (propName: string, value: boolean) => void
         setProperty: (propName: string, value: string) => void
     }
@@ -121,6 +122,7 @@ export function FormLayoutBasic(props: {
         />
         <FormInput
             disabled={props.disabled}
+            isBottom={!props.doublePass}
             style={{ borderRightWidth: 2, borderEndColor: !passwordCheck ? "red" : "mediumspringgreen" }}
             formMarginVertical={5}
             formColor={theme['background-basic-color-2']}
@@ -129,14 +131,14 @@ export function FormLayoutBasic(props: {
             accessoryRight={PasswordVisibilityIcon}
             secureTextEntry={secureTextEntry}
             title="Clave"
-            placeholder="Nueva clave"
+            placeholder="Clave"
             defaultValue={password}
             onChangeText={input => {
                 setProperty('password', input)
                 setCheck('password', new RegExp(patterns.User.PASSWORD).test(input.trimEnd()))
             }}
         />
-        <FormInput
+        {props.doublePass ? <FormInput
             disabled={props.disabled}
             isBottom
             style={{ borderRightWidth: 2, borderEndColor: !passwordCopyCheck ? "red" : "mediumspringgreen" }}
@@ -147,12 +149,15 @@ export function FormLayoutBasic(props: {
             accessoryRight={PasswordVisibilityIcon}
             secureTextEntry={secureTextEntry}
             title="Clave"
-            placeholder="Repetir clave"
+            placeholder="Repetir"
             defaultValue={passwordCopy}
             onChangeText={input => {
                 setProperty('passwordCopy', input)
             }}
         />
+            :
+            <View style={{ backgroundColor: 'transparent', height: 50, width: 40 }} />
+        }
     </View>
 }
 

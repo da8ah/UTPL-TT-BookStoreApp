@@ -8,14 +8,14 @@ export default class GestionDeCuentaClient {
 		return iPersistenciaClient.actualizarCuenta(client);
 	}
 
-	public static actualizarBillingInfo(iPersistenciaClient: IPersistenciaClient, client: Client, billingInfo: BillingInfo): Promise<boolean> {
-		return iPersistenciaClient.actualizarBillingInfo(client, billingInfo);
+	public static actualizarBillingInfo(iPersistenciaClient: IPersistenciaClient, billingInfo: BillingInfo): Promise<boolean> {
+		return iPersistenciaClient.actualizarBillingInfo(billingInfo);
 	}
-	public static agregarCard(iPersistenciaClient: IPersistenciaClient, client: Client, card: Card): Promise<boolean> {
-		return iPersistenciaClient.agregarCard(client, card);
+	public static agregarCard(iPersistenciaClient: IPersistenciaClient, card: Card): Promise<boolean> {
+		return iPersistenciaClient.agregarCard(card);
 	}
-	public static eliminarCard(iPersistenciaClient: IPersistenciaClient, client: Client, card: Card): Promise<boolean> {
-		return iPersistenciaClient.eliminarCard(client, card);
+	public static eliminarCard(iPersistenciaClient: IPersistenciaClient, card: Card): Promise<boolean> {
+		return iPersistenciaClient.eliminarCard(card);
 	}
 
 	public static eliminarCuenta(iPersistenciaClient: IPersistenciaClient): Promise<boolean> {

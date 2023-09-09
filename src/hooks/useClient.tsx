@@ -29,7 +29,18 @@ const useClient = create<ClientStoreType>()((set, get) => ({
     updateClient: (client?: Client) => set(state => ({ client: client || state.client })),
     updateClientAccount: async (client: Client) => {
         const token = await new LocalService().obtenerTokenAlmacenado()
-        return await GestionDeCuentaClient.actualizarCuenta(new RemoteService(token, get().client.getUser()), client)
+        const billingInfo = get().client.getBillingInfo()
+        return (
+            billingInfo.getToWhom() !== client.getBillingInfo().getToWhom() ||
+            billingInfo.getCi() !== client.getBillingInfo().getCi() ||
+            billingInfo.getProvincia() !== client.getBillingInfo().getProvincia() ||
+            billingInfo.getCiudad() !== client.getBillingInfo().getCiudad() ||
+            billingInfo.getNumCasa() !== client.getBillingInfo().getNumCasa() ||
+            billingInfo.getCalles() !== client.getBillingInfo().getCalles()
+        ) ?
+            await GestionDeCuentaClient.actualizarCuenta(new RemoteService(token, get().client.getUser()), client)
+            && await GestionDeCuentaClient.actualizarBillingInfo(new RemoteService(token, get().client.getUser()), client.getBillingInfo())
+            : await GestionDeCuentaClient.actualizarCuenta(new RemoteService(token, get().client.getUser()), client)
     },
     deleteClientAccount: async () => {
         const token = await new LocalService().obtenerTokenAlmacenado()

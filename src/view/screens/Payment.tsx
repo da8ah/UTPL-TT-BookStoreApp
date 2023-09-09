@@ -13,6 +13,7 @@ import ModalDisplay from "../components/ModalDisplay";
 import { RootNavProps } from "../routes/types.nav";
 import CartStatus from "./layouts/CartStatus";
 import ModalAlert, { ModalAlertProps } from "./layouts/ModalAlert";
+import useAuth from "../../hooks/useAuth";
 
 const styles = StyleSheet.create({
     common: {
@@ -38,13 +39,17 @@ const styles = StyleSheet.create({
 export default function Payment() {
     usePreventScreenCapture('payment') // Screenshots NOT Allowed
 
+    const { logoutBio } = useAuth()
     const { myCart, togglePayment, publishableKey, queryPublishableKey } = useCart()
     const fecha = new Date().toLocaleDateString("ec")
 
     useEffect(() => {
         togglePayment()
         queryPublishableKey()
-        return () => togglePayment()
+        return () => {
+            logoutBio()
+            togglePayment()
+        }
     }, [])
 
     return (
@@ -68,6 +73,7 @@ export default function Payment() {
 
 const OrderFooter = () => {
     const navigation = useNavigation<RootNavProps>()
+    const { logoutBio } = useAuth()
     const { client, updateClient } = useClient()
     const { confirmPayment } = useConfirmPayment()
     const { sendPaymentToServer, sendTransactionToServer, emptyCart } = useCart()
@@ -80,6 +86,7 @@ const OrderFooter = () => {
 
     function getModalAlertProps(codeStatus: string): ModalAlertProps {
         const volverAlCarrito = () => {
+            logoutBio()
             setModalVisibility(false)
             navigation.navigate("CartOrder")
         }
@@ -126,6 +133,7 @@ const OrderFooter = () => {
                     message: "Volviendo al Inicio"
                 },
                 onButtonPress: () => {
+                    logoutBio()
                     emptyCart()
                     setModalVisibility(false)
                     navigation.navigate("BottomNav", { screen: "Home" })

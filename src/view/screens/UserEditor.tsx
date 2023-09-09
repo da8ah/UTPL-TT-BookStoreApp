@@ -17,14 +17,14 @@ import ModalAlert, { ModalAlertProps } from "./layouts/ModalAlert";
 import ModalConfirmation from "./layouts/ModalConfirmation";
 
 type confirmationType = "actualizar" | "eliminar"
-type alertType = "bio" | "actualizar" | "eliminar"
+type alertType = "bio" | "actualizar" | "eliminar" | "error"
 
 export default function UserEditor() {
     const navigation = useNavigation<UserNavProps>()
     const theme = useTheme()
     const [isKeyboardVisible] = useKeyboard()
-    const { tryToAuth, isAuth, isBioAuth, isBioSupported, checkBioSupport, requestFingerprint, logout } = useAuth()
-    const { client, updateClientAccount, deleteClientAccount } = useClient()
+    const { tryToAuth, isAuth, logout, logoutBio, isBioAuth, isBioSupported, checkBioSupport, requestFingerprint } = useAuth()
+    const { client, updateClient, updateClientAccount, deleteClientAccount } = useClient()
     const { newClient, resetClient } = useFormStore()
 
     const [isEditorEnabled, setEditorState] = useState(false)
@@ -39,13 +39,11 @@ export default function UserEditor() {
         emailCheck,
         mobileCheck,
         passwordCheck,
-        passwordCopyCheck,
         user,
         name,
         email,
         mobile,
         password,
-        passwordCopy,
 
         toWhomCheck,
         ciCheck,
@@ -81,6 +79,7 @@ export default function UserEditor() {
         setProperty('calles', client.getBillingInfo().getCalles())
 
         return () => {
+            logoutBio()
             resetClient();
             (async () => await preventScreenCaptureAsync())()
         }
@@ -92,14 +91,12 @@ export default function UserEditor() {
         const emailCheck = new RegExp(patterns.User.EMAIL).test(email.trim())
         const mobileCheck = new RegExp(patterns.User.MOBILE).test(mobile.trim())
         const passwordCheck = new RegExp(patterns.User.PASSWORD).test(password)
-        const passwordCopyCheck = new RegExp(patterns.User.PASSWORD).test(password) && password === passwordCopy
         setCheck('user', userCheck)
         setCheck('name', nameCheck)
         setCheck('email', emailCheck)
         setCheck('mobile', mobileCheck)
         setCheck('password', passwordCheck)
-        setCheck('passwordCopy', passwordCopyCheck)
-        return userCheck && nameCheck && emailCheck && mobileCheck && passwordCheck && passwordCopyCheck
+        return userCheck && nameCheck && emailCheck && mobileCheck && passwordCheck
     }
     const validateBillingInfo = () => {
         const toWhomCheck = new RegExp(patterns.BillingInfo.TO_WHOM).test(toWhom.trim())
@@ -141,6 +138,7 @@ export default function UserEditor() {
             backgroundColor: theme['color-warning-500'],
             onPress: async () => {
                 await preventScreenCaptureAsync()
+                logoutBio()
                 setEditorState(false)
             }
         },
@@ -171,7 +169,7 @@ export default function UserEditor() {
     } {
         switch (confirmationType) {
             case 'eliminar': return {
-                title: "¿Eliminar Cuenta? 😨",
+                title: "¿Eliminar CUENTA? 😨",
                 status: "danger",
                 onButtonPress: () => {
                     deleteClientAccount()
@@ -180,17 +178,26 @@ export default function UserEditor() {
                 }
             }
             case 'actualizar': return {
-                title: "Actualizar información",
+                title: "Actualizar Cuenta",
                 status: "success",
                 onButtonPress: async () => {
-                    if (validateBasic()) setBasicState(false)
-                    if (validateBillingInfo()) {
-                        if (await updateClientAccount(newClient)) {
-                            tryToAuth()
+                    if (validateBasic()) {
+                        if (validateBillingInfo()) {
+                            if (await updateClientAccount(newClient)) {
+                                updateClient(await tryToAuth())
+                                setCodeStatus("actualizar")
+                                setAlertState(true)
+                            } else {
+                                setCodeStatus("error")
+                                setAlertState(true)
+                            }
+                        } else {
+                            setBasicState(false)
                             setModalVisibility(false)
-                            setCodeStatus("actualizar")
-                            setAlertState(true)
                         }
+                    } else {
+                        setBasicState(true)
+                        setModalVisibility(false)
                     }
                 }
             }
@@ -213,7 +220,7 @@ export default function UserEditor() {
             case 'eliminar': return {
                 modalType: "success",
                 data: {
-                    title: "Eliminado correctamente",
+                    title: "ELIMINADO",
                     message: "Iniciar sesión"
                 },
                 onButtonPress: () => {
@@ -226,8 +233,19 @@ export default function UserEditor() {
             case 'actualizar': return {
                 modalType: "success",
                 data: {
-                    title: "Actualizado correctamente",
+                    title: "ACTUALIZADO",
                     message: "Registro actualizado"
+                },
+                onButtonPress: () => {
+                    setModalVisibility(false)
+                    setAlertState(false)
+                }
+            }
+            case 'error': return {
+                modalType: "failed",
+                data: {
+                    title: "Error al Actualizar",
+                    message: "Verifique su Clave"
                 },
                 onButtonPress: () => {
                     setModalVisibility(false)
@@ -276,13 +294,11 @@ export default function UserEditor() {
                         emailCheck,
                         mobileCheck,
                         passwordCheck,
-                        passwordCopyCheck,
                         user,
                         name,
                         email,
                         mobile,
                         password,
-                        passwordCopy,
                         setCheck,
                         setProperty
                     }} />

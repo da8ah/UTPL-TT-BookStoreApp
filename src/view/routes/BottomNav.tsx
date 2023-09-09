@@ -41,7 +41,7 @@ const UiKittenBottomTabNav = ({ navigation, state }: BottomTabBarProps) => {
             selectedIndex={state.index}
             onSelect={async (index) => {
                 if (index === 2) {
-                    setScreenshotAllowedState(false)
+                    if (!isScreenshotAllowed) setScreenshotAllowedState(false)
                     if (Keyboard.isVisible()) {
                         Keyboard.dismiss();
                         setTimeout(() => {
