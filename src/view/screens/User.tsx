@@ -63,7 +63,7 @@ export default function ProfileScreen() {
     const facturacionChildren: JSX.Element[] = Object.entries(facturacion).map(([key, value], index) => (
         <View key={`billingInfoProp${index}`} style={styles.cardPropsRow}>
             <Text style={styles.cardKeys}>{key}</Text>
-            <Text style={styles.cardValues} numberOfLines={1} ellipsizeMode="middle">
+            <Text style={styles.cardValues} numberOfLines={1} ellipsizeMode="tail">
                 {value}
             </Text>
         </View>

@@ -6,7 +6,7 @@ type ScreenshotStoreType = {
 }
 
 const useScreenshot = create<ScreenshotStoreType>()((set) => ({
-    isScreenshotAllowed: false,
+    isScreenshotAllowed: true,
     setScreenshotAllowedState: (value: boolean) => set({ isScreenshotAllowed: value })
 }))
 
