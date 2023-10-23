@@ -2,7 +2,7 @@
   "expo": {
     "name": "BookStore (Demo)",
     "slug": "UTPL-TT-BookStoreApp",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -30,7 +30,8 @@
         "ACCESS_WIFI_STATE"
       ],
       "allowBackup": false,
-      "package": "com.daochoa6.bookstoreapp"
+      "package": "com.daochoa6.bookstoreapp",
+      "versionCode": 2
     },
     "web": {
       "favicon": "./assets/favicon.png"

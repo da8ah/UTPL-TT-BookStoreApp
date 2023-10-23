@@ -11,14 +11,14 @@ const BookStoreList = (props: { books: StockBook[] } & Omit<ListProps, 'data' | 
     const books = props.books
 
     return (
-        <View style={{ flex: 1 }}>
+        <View style={[styles.common, { flex: 1 }]}>
             <List
                 {...props}
                 scrollEnabled
                 key={"books"}
                 style={{ backgroundColor: "transparent" }}
                 contentContainerStyle={{ backgroundColor: "transparent" }}
-                columnWrapperStyle={[styles.common, { justifyContent: books.length <= 1 ? 'flex-end' : 'flex-start', flexDirection: books.length <= 1 ? 'row-reverse' : 'row' }]}
+                columnWrapperStyle={{ columnGap: 10, justifyContent: books.length <= 1 ? 'flex-end' : 'flex-start', flexDirection: books.length <= 1 ? 'row-reverse' : 'row' }}
                 numColumns={2}
                 initialNumToRender={books.length}
                 data={books}

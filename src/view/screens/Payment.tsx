@@ -1,10 +1,10 @@
 import { useNavigation } from "@react-navigation/native";
 import { BillingDetails, CardField, StripeProvider, useConfirmPayment } from "@stripe/stripe-react-native";
-import { Details } from "@stripe/stripe-react-native/lib/typescript/src/types/components/CardFieldInput";
 import { Button, Icon, Text } from "@ui-kitten/components";
 import { usePreventScreenCapture } from 'expo-screen-capture';
 import { useEffect, useState } from "react";
 import { Keyboard, KeyboardAvoidingView, StyleSheet, View } from "react-native";
+import useAuth from "../../hooks/useAuth";
 import useCart from "../../hooks/useCart";
 import useClient from "../../hooks/useClient";
 import Card from "../../model/core/entities/Card";
@@ -13,7 +13,6 @@ import ModalDisplay from "../components/ModalDisplay";
 import { RootNavProps } from "../routes/types.nav";
 import CartStatus from "./layouts/CartStatus";
 import ModalAlert, { ModalAlertProps } from "./layouts/ModalAlert";
-import useAuth from "../../hooks/useAuth";
 
 const styles = StyleSheet.create({
     common: {
@@ -79,9 +78,9 @@ const OrderFooter = () => {
     const { sendPaymentToServer, sendTransactionToServer, emptyCart } = useCart()
 
     const [isPress, setPressState] = useState(false)
-    const [codeStatus, setCodeStatus] = useState('')
+    const [codeStatus, setCodeStatus] = useState('init')
     const [confirmDisabled, setConfirmDisabledState] = useState<boolean>(true)
-    const [modalVisibility, setModalVisibility] = useState(false)
+    const [modalVisibility, setModalVisibility] = useState(true)
     const [isPaymentInProgress, setPaymentInProgress] = useState(false)
 
     function getModalAlertProps(codeStatus: string): ModalAlertProps {
@@ -91,6 +90,14 @@ const OrderFooter = () => {
             navigation.navigate("CartOrder")
         }
         switch (codeStatus) {
+            case "init": return {
+                modalType: "success",
+                data: {
+                    title: "Tarjeta de Prueba",
+                    message: "Completar con secuencia de: 42 42 42..."
+                },
+                onButtonPress: () => setModalVisibility(false)
+            }
             case ":400": return {
                 modalType: "failed",
                 data: {
@@ -151,23 +158,17 @@ const OrderFooter = () => {
         }
     }
 
-    const validateCardInputs = (cardDetails: Details) => {
-        const postalCode = cardDetails.postalCode;
-        const postalCodeRegEx: RegExp = /^\d{6}$/;
-        if (postalCode) return postalCodeRegEx.test(postalCode);
-        else return false;
-    }
-
     const UnlockIcon = () => <Icon name="unlock" fill="white" height="30" width="30" />;
     const LockIcon = () => <Icon name="lock" fill="white" height="30" width="30" />;
     return (
         <KeyboardAvoidingView style={styles.body}>
+            {/* // WARNING: Do not use it with Conditional Rendering */}
             <CardField
-                autofocus={true}
+                postalCodeEnabled={false}
                 style={styles.paymentCardField}
+                placeholders={{ number: '4242 4242 4242 4242', cvc: '242' }}
                 onCardChange={(cardDetails) => {
-                    const completed = cardDetails.complete;
-                    if (completed && validateCardInputs(cardDetails)) {
+                    if (cardDetails.complete) {
                         setConfirmDisabledState(false)
                         if (client.getCards().length === 0) {
                             client.setCards([

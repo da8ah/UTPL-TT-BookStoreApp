@@ -57,7 +57,7 @@ export default function ModalAlert(props: ModalAlertProps) {
         <Button
             size="small"
             status={status[modalType] && data.iconName !== undefined ? 'warning' : status[modalType]}
-            style={{ width: "50%", paddingTop: 10 }}
+            style={{ width: "50%", paddingTop: 5 }}
             onPress={onButtonPress}
         >
             Ok
